@@ -1,7 +1,9 @@
 {
   "name": "SLIC Assessment Portal",
   "short_name": "SLIC Hub",
-  "start_url": "index.html",
+  "description": "Professional Vehicle Valuation Tool for SLIC",
+  "start_url": "./index.html",
+  "scope": ".",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#00ADBB",
