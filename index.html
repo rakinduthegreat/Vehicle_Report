@@ -3,127 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SLIC Vehicle Assessment</title>
-    
+    <title>SLIC Vehicle Assessment Portal</title>
     <link rel="manifest" href="manifest.json">
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    
     <style>
-        :root { --slic-blue: #00ADBB; }
-        body { background: #f4f7f6; font-family: 'Helvetica Neue', Arial, sans-serif; }
-        .slic-theme { background-color: var(--slic-blue); color: white; }
-        .card { background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-        .tick { color: #22c55e; font-weight: bold; } /* Green */
-        .cross { color: #ef4444; font-weight: bold; } /* Red */
-        input:focus { border-color: var(--slic-blue); outline: none; box-shadow: 0 0 0 2px rgba(0, 173, 187, 0.2); }
+        :root { --slic-blue: #00ADBB; --slic-red: #ef4444; --slic-green: #10b981; }
+        body { background: #f1f5f9; font-family: 'Inter', sans-serif; color: #1e293b; }
+        .slic-header { background: var(--slic-blue); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .card { background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-top: 5px solid var(--slic-blue); }
+        .input-field { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; transition: 0.3s; font-size: 14px; }
+        .input-field:focus { border-color: var(--slic-blue); ring: 2px solid var(--slic-blue); }
+        .tick { color: var(--slic-green); font-weight: 900; }
+        .cross { color: var(--slic-red); font-weight: 900; }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--slic-blue); border-radius: 50%; width: 18px; height: 18px; animation: spin 0.8s linear infinite; display: inline-block; vertical-align: middle; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        #statusBox { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
     </style>
 </head>
-<body class="pb-20">
+<body class="pb-12">
 
-    <header class="slic-theme p-5 shadow-md">
-        <div class="max-w-md mx-auto flex items-center gap-3">
-            <div class="bg-white text-[#00ADBB] p-1 rounded font-black text-xs">SLIC</div>
-            <h1 class="font-bold text-lg uppercase tracking-wider">Vehicle Hub</h1>
+    <header class="slic-header p-5 text-white flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <div class="bg-white text-[#00ADBB] px-2 py-1 rounded font-black text-xs">SLIC</div>
+            <h1 class="font-bold text-sm">LIVE VALUATION ENGINE</h1>
         </div>
+        <div id="statusBox" class="bg-black/20 px-3 py-1 rounded-full text-[9px]">Online: Jan 2026 Data</div>
     </header>
 
-    <main class="max-w-md mx-auto p-4 space-y-4">
-        
-        <div class="card p-6">
-            <h2 class="text-sm font-bold text-gray-400 uppercase mb-4 tracking-widest">Input Details</h2>
-            <div class="space-y-4">
-                <input type="text" id="brand" placeholder="Vehicle Brand (e.g. Toyota)" class="w-full p-3 border rounded-lg">
-                <input type="text" id="model" placeholder="Vehicle Model (e.g. Premio)" class="w-full p-3 border rounded-lg">
-                <input type="number" id="year" placeholder="Year of Manufacture" class="w-full p-3 border rounded-lg">
-                <input type="text" id="chassis" placeholder="Chassis No (Optional)" class="w-full p-3 border rounded-lg">
-                <input type="text" id="engine_no" placeholder="Engine No (Optional)" class="w-full p-3 border rounded-lg">
+    <main class="max-w-lg mx-auto p-4">
+        <div class="card p-6 mb-4">
+            <div class="grid grid-cols-2 gap-3">
+                <div class="col-span-1"><label class="text-[10px] font-bold text-slate-400">BRAND</label>
+                    <input type="text" id="brand" class="input-field" placeholder="e.g. Toyota"></div>
+                <div class="col-span-1"><label class="text-[10px] font-bold text-slate-400">MODEL</label>
+                    <input type="text" id="model" class="input-field" placeholder="e.g. Axio WxB"></div>
+                <div class="col-span-2"><label class="text-[10px] font-bold text-slate-400">YEAR OF MANUFACTURE</label>
+                    <input type="number" id="year" class="input-field" placeholder="2018"></div>
             </div>
-            <button onclick="generateReport()" id="mainBtn" class="w-full mt-6 slic-theme py-4 rounded-xl font-bold shadow-lg active:scale-95 transition-transform">
-                Generate Live Report
+            <button onclick="performAIResearch()" id="genBtn" class="w-full mt-6 bg-[#00ADBB] text-white font-bold py-4 rounded-lg shadow-md hover:bg-[#008c96] transition-all">
+                GENERATE LIVE REPORT
             </button>
         </div>
 
-        <div id="reportContainer" class="hidden space-y-4">
-            <div id="printableReport" class="card p-6 text-sm text-gray-800">
+        <div id="loadingIndicator" class="hidden text-center p-4">
+            <div class="loader mr-2"></div>
+            <span class="text-xs font-bold text-slate-500" id="loadingText">Analyzing Sri Lankan Market...</span>
+        </div>
+
+        <div id="reportContainer" class="hidden">
+            <div id="printableArea" class="card p-8 bg-white border-none shadow-xl">
                 </div>
-            <button onclick="downloadPDF()" class="w-full bg-gray-800 text-white py-4 rounded-xl font-bold">
-                Download PDF Report
+            <button onclick="downloadPDF()" class="w-full mt-4 bg-slate-800 text-white font-bold py-4 rounded-lg shadow-lg">
+                SAVE AS PDF
             </button>
         </div>
-
     </main>
 
     <script>
-        // Logic to simulate real-time research based on user inputs
-        async function generateReport() {
-            const btn = document.getElementById('mainBtn');
-            const brand = document.getElementById('brand').value;
-            const model = document.getElementById('model').value;
-            const year = document.getElementById('year').value;
+        const API_KEY = "AIzaSyDQpr91EZf4yN3xVmfjqvSlxVZw_nNRosY";
 
-            if(!brand || !model || !year) {
-                alert("Please enter Brand, Model and Year.");
-                return;
+        async function performAIResearch() {
+            const b = document.getElementById('brand').value;
+            const m = document.getElementById('model').value;
+            const y = document.getElementById('year').value;
+            const btn = document.getElementById('genBtn');
+            const loader = document.getElementById('loadingIndicator');
+
+            if(!b || !m || !y) return alert("Please fill the vehicle details.");
+
+            btn.classList.add('hidden');
+            loader.classList.remove('hidden');
+
+            const prompt = `Research the current Sri Lankan vehicle market (January 2026). 
+            Target: ${b} ${m} ${y}. 
+            Follow these rules:
+            1. Seating capacity must EXCLUDE driver.
+            2. Engine capacity must be in CC (or KW for Electric).
+            3. Body Kit is 'Yes' ONLY if factory-standard (e.g. WxB, RS, Z Package).
+            4. 4WD availability must be checked.
+            5. Consider the recent price softening for hybrids (Jan 2026).
+
+            Return ONLY JSON:
+            {
+                "fuel": "str", "cc": "str", "seats": num, "rmv": "str", 
+                "prices": {"excellent": num, "good": num, "fair": num},
+                "fittings": {"steering": true, "airbags": true, "abs": true, "4wd": bool, "bodykit": bool},
+                "dealer_acc": "list common dealer accessories here",
+                "trend": "str"
+            }`;
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+                const result = await response.json();
+                const cleanJson = result.candidates[0].content.parts[0].text.replace(/```json|```/g, "").trim();
+                const data = JSON.parse(cleanJson);
+                renderReport(data, b, m, y);
+            } catch (err) {
+                alert("AI Research Error. Check API connection.");
+                btn.classList.remove('hidden');
+            } finally {
+                loader.classList.add('hidden');
             }
-
-            btn.innerText = "Researching Market Values...";
-            
-            // Simulating a real-time fetch to a database
-            setTimeout(() => {
-                renderUI(brand, model, year);
-                btn.innerText = "Generate Live Report";
-            }, 1500);
         }
 
-        function renderUI(brand, model, year) {
+        function renderReport(data, b, m, y) {
             const container = document.getElementById('reportContainer');
-            const content = document.getElementById('printableReport');
-            
-            // Setting probabilistic values for Sri Lankan market
-            const fuelType = (brand.toLowerCase() === 'toyota' && model.toLowerCase().includes('premio')) ? 'HEV' : 'Petrol';
-            const capacity = 1496;
-            const seats = 4; // Excluding driver as requested
+            const area = document.getElementById('printableArea');
+            const si = (val) => (val * 0.85).toLocaleString();
 
-            content.innerHTML = `
-                <div class="border-b-2 border-[#00ADBB] pb-3 mb-4">
-                    <h3 class="font-black text-lg uppercase">${brand} ${model}</h3>
-                    <p class="text-[10px] text-gray-500 font-bold">${year} | ${fuelType} | ${capacity} CC</p>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-2 mb-6">
-                    <div class="bg-gray-50 p-2 rounded">
-                        <p class="text-[9px] text-gray-400 font-bold uppercase">Seating Capacity</p>
-                        <p class="font-bold">${seats} (Excl. Driver)</p>
-                    </div>
-                    <div class="bg-gray-50 p-2 rounded">
-                        <p class="text-[9px] text-gray-400 font-bold uppercase">RMV Class</p>
-                        <p class="font-bold">Motor Car</p>
-                    </div>
+            area.innerHTML = `
+                <div class="border-b-4 border-[#00ADBB] pb-4 mb-6">
+                    <h2 class="text-2xl font-black text-slate-800">${b.toUpperCase()} ${m.toUpperCase()}</h2>
+                    <p class="text-[10px] font-bold text-slate-400">VALUATION DATE: JANUARY 2026 | ${y} MODEL</p>
                 </div>
 
-                <h4 class="font-bold text-[#00ADBB] mb-2 uppercase text-xs">Market Valuation & Insurance</h4>
-                <div class="space-y-1 mb-6">
-                    <div class="flex justify-between bg-green-50 p-2 rounded">
-                        <span>Excellent Condition</span>
-                        <span class="font-bold text-green-700">LKR 16,800,000</span>
-                    </div>
-                    <div class="flex justify-between p-2">
-                        <span class="text-xs text-gray-500 italic">Sum Insured (85%)</span>
-                        <span class="text-xs font-bold">LKR 14,280,000</span>
-                    </div>
+                <div class="grid grid-cols-2 gap-4 mb-6 bg-slate-50 p-4 rounded-lg text-xs font-bold">
+                    <div class="flex flex-col"><span class="text-[9px] text-slate-400">FUEL TYPE</span> ${data.fuel}</div>
+                    <div class="flex flex-col"><span class="text-[9px] text-slate-400">ENGINE CAPACITY</span> ${data.cc}</div>
+                    <div class="flex flex-col text-blue-600"><span class="text-[9px] text-slate-400">SEATS (EXCL. DRIVER)</span> ${data.seats}</div>
+                    <div class="flex flex-col"><span class="text-[9px] text-slate-400">RMV CLASS</span> ${data.rmv}</div>
                 </div>
 
-                <h4 class="font-bold text-[#00ADBB] mb-2 uppercase text-xs">Standard Fittings Check</h4>
-                <div class="grid grid-cols-2 gap-x-6 gap-y-1 text-[11px]">
+                <h3 class="text-[#00ADBB] text-xs font-black mb-3">MARKET VALUATION (LKR)</h3>
+                <table class="w-full text-left text-xs mb-6 border">
+                    <tr class="bg-slate-100 text-[10px]">
+                        <th class="p-2 border">CONDITION</th><th class="p-2 border">MARKET VALUE</th><th class="p-2 border text-red-600">85% SUM INSURED</th>
+                    </tr>
+                    <tr><td class="p-2 border font-medium">Excellent</td><td class="p-2 border">${data.prices.excellent.toLocaleString()}</td><td class="p-2 border font-bold text-red-600">${si(data.prices.excellent)}</td></tr>
+                    <tr><td class="p-2 border font-medium text-slate-500">Good</td><td class="p-2 border">${data.prices.good.toLocaleString()}</td><td class="p-2 border font-bold">${si(data.prices.good)}</td></tr>
+                    <tr><td class="p-2 border font-medium text-slate-500 text-slate-400">Fair</td><td class="p-2 border">${data.prices.fair.toLocaleString()}</td><td class="p-2 border font-bold">${si(data.prices.fair)}</td></tr>
+                </table>
+
+                <h3 class="text-[#00ADBB] text-xs font-black mb-3 uppercase">Standard Fittings Assessment</h3>
+                <div class="grid grid-cols-2 gap-x-6 gap-y-2 text-[11px] mb-6">
                     <div class="flex justify-between border-b py-1"><span>Power Steering</span> <span class="tick">✔</span></div>
                     <div class="flex justify-between border-b py-1"><span>Air Bags</span> <span class="tick">✔</span></div>
-                    <div class="flex justify-between border-b py-1"><span>4WD</span> <span class="cross">✘</span></div>
-                    <div class="flex justify-between border-b py-1"><span>Body Kit</span> <span class="cross">✘</span></div>
+                    <div class="flex justify-between border-b py-1"><span>ABS Braking</span> <span class="tick">✔</span></div>
+                    <div class="flex justify-between border-b py-1"><span>4-Wheel Drive</span> <span class="${data.fittings['4wd'] ? 'tick' : 'cross'}">${data.fittings['4wd'] ? '✔' : '✘'}</span></div>
+                    <div class="flex justify-between border-b py-1"><span>Factory Body Kit</span> <span class="${data.fittings.bodykit ? 'tick' : 'cross'}">${data.fittings.bodykit ? '✔' : '✘'}</span></div>
+                </div>
+
+                <div class="bg-blue-50 p-3 rounded text-[10px] italic text-slate-600">
+                    <strong>Additional High-Value Fittings:</strong> ${data.dealer_acc}
                 </div>
             `;
-            
             container.classList.remove('hidden');
             container.scrollIntoView({ behavior: 'smooth' });
         }
@@ -131,60 +159,10 @@
         function downloadPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            const reportText = document.getElementById('printableReport').innerText;
-            doc.text("SLIC Vehicle Assessment Report", 10, 10);
-            doc.text(reportText, 10, 20);
-            doc.save("SLIC_Report.pdf");
-        }
-    </script>
-</body>
-</html>
-                    <table class="w-full mb-6 border">
-                        <tr class="bg-slate-50 text-[10px] font-bold">
-                            <th class="p-2 border">Condition</th><th class="p-2 border">Market Value (LKR)</th><th class="p-2 border">Sum Insured (85%)</th>
-                        </tr>
-                        <tr><td class="p-2 border">Excellent</td><td class="p-2 border">16.5M</td><td class="p-2 border font-bold">${SI(16500000)}</td></tr>
-                        <tr><td class="p-2 border">Good</td><td class="p-2 border">15.8M</td><td class="p-2 border font-bold">${SI(15800000)}</td></tr>
-                        <tr><td class="p-2 border">Fair</td><td class="p-2 border">15.2M</td><td class="p-2 border font-bold">${SI(15200000)}</td></tr>
-                    </table>
-
-                    <h3 class="font-bold mb-2 text-[#00ADBB]">Standard Fittings Check</h3>
-                    <div class="grid grid-cols-2 gap-x-8 gap-y-1 text-xs">
-                        <div class="flex justify-between"><span>Power Steering</span><span class="tick">✔</span></div>
-                        <div class="flex justify-between"><span>Air Bags</span><span class="tick">✔</span></div>
-                        <div class="flex justify-between"><span>Power Shutter</span><span class="tick">✔</span></div>
-                        <div class="flex justify-between"><span>ABS/Brake</span><span class="tick">✔</span></div>
-                        <div class="flex justify-between"><span>Power Mirror</span><span class="tick">✔</span></div>
-                        <div class="flex justify-between"><span>Alloy Rims</span><span class="tick">✔</span></div>
-                        <div class="flex justify-between"><span>4WD</span><span class="cross">✘</span></div>
-                        <div class="flex justify-between"><span>Body Kit</span><span class="cross">✘</span></div>
-                    </div>
-                `;
-                
-                genBtn.innerText = "Generate Market Report";
-                reportArea.classList.remove('hidden');
-                reportArea.scrollIntoView({behavior: 'smooth'});
-            }, 1500);
-        }
-
-        function exportPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFontSize(18);
-            doc.setTextColor(0, 173, 187);
-            doc.text("SLIC VEHICLE ASSESSMENT REPORT", 15, 20);
-            
             doc.setFontSize(10);
-            doc.setTextColor(100);
-            doc.text("Generated: Jan 2026", 15, 28);
-            
-            const source = document.getElementById('reportContent');
-            doc.html(source, {
-                callback: function (doc) { doc.save("SLIC_Report.pdf"); },
-                x: 15, y: 40, width: 170, windowWidth: 650
-            });
+            doc.text(document.getElementById('printableArea').innerText, 15, 20);
+            doc.save("SLIC_Valuation_Report.pdf");
         }
     </script>
 </body>
 </html>
-
