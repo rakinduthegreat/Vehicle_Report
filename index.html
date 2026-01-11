@@ -8,7 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { --slic-blue: #00ADBB; --slic-red: #ef4444; --slic-green: #10b981; }
-        body { background: #f8fafc; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background: #f8fafc; font-family: sans-serif; }
         .slic-header { background: var(--slic-blue); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .card { background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-top: 6px solid var(--slic-blue); }
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--slic-blue); border-radius: 50%; width: 28px; height: 28px; animation: spin 1s linear infinite; display: inline-block; }
@@ -21,25 +21,25 @@
 
     <header class="slic-header p-6 text-white text-center mb-6">
         <h1 class="font-black tracking-tighter text-xl uppercase italic">SLIC ASSESSMENT</h1>
-        <p class="text-[10px] font-bold uppercase tracking-[0.2em] opacity-80 mt-1">Valuation Intelligence 2026</p>
+        <p class="text-[10px] font-bold uppercase tracking-[0.2em] opacity-80 mt-1">Valuation Intelligence | JAN 2026</p>
     </header>
 
     <main class="max-w-md mx-auto p-4">
         <div class="card p-6 mb-6" id="inputCard">
             <div class="grid grid-cols-2 gap-4">
-                <div class="col-span-1"><label class="text-[10px] font-bold text-slate-400 uppercase">Brand</label><input type="text" id="brand" class="w-full p-3 bg-slate-50 border rounded-lg outline-none" placeholder="Nissan"></div>
-                <div class="col-span-1"><label class="text-[10px] font-bold text-slate-400 uppercase">Model</label><input type="text" id="model" class="w-full p-3 bg-slate-50 border rounded-lg outline-none" placeholder="Magnite"></div>
-                <div class="col-span-2"><label class="text-[10px] font-bold text-slate-400 uppercase">Year</label><input type="number" id="year" class="w-full p-3 bg-slate-50 border rounded-lg outline-none" placeholder="2025"></div>
+                <div class="col-span-1"><label class="text-[10px] font-bold text-slate-400 uppercase">Brand</label><input type="text" id="brand" class="w-full p-3 bg-slate-50 border rounded-lg outline-none focus:border-[#00ADBB]" placeholder="Toyota"></div>
+                <div class="col-span-1"><label class="text-[10px] font-bold text-slate-400 uppercase">Model</label><input type="text" id="model" class="w-full p-3 bg-slate-50 border rounded-lg outline-none focus:border-[#00ADBB]" placeholder="Aqua"></div>
+                <div class="col-span-2"><label class="text-[10px] font-bold text-slate-400 uppercase">Year</label><input type="number" id="year" class="w-full p-3 bg-slate-50 border rounded-lg outline-none focus:border-[#00ADBB]" placeholder="2015"></div>
             </div>
             <button onclick="runResearch()" id="mainBtn" class="w-full mt-6 bg-[#00ADBB] text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest text-sm transition-all active:scale-95">Run Assessment</button>
         </div>
 
         <div id="loading" class="hidden text-center py-12">
             <div class="loader mb-4"></div>
-            <p class="text-xs font-black text-slate-400 uppercase tracking-widest">Routing through secure bridge...</p>
+            <p class="text-xs font-black text-slate-400 uppercase tracking-widest">Routing via AllOrigins Bridge...</p>
         </div>
 
-        <div id="resultSection" class="hidden animate-in fade-in duration-500">
+        <div id="resultSection" class="hidden">
             <div id="reportBox" class="card p-8 bg-white text-slate-800 mb-4 shadow-xl"></div>
             <button onclick="downloadPDF()" class="w-full bg-slate-900 text-white font-black py-5 rounded-2xl shadow-xl uppercase tracking-widest text-xs mb-3">Download PDF Assessment</button>
             <button onclick="location.reload()" class="w-full text-slate-400 font-bold text-[10px] uppercase">New Assessment</button>
@@ -59,30 +59,27 @@
             document.getElementById('mainBtn').style.display = 'none';
             document.getElementById('loading').classList.remove('hidden');
 
-            const prompt = `Act as an SLIC vehicle valuer. Provide a technical assessment for a ${b} ${m} ${y} in Sri Lanka for Jan 2026. 
-            Include: 4WD availability, Seating (excl. driver), Engine CC/KW, and RMV Class. 
-            Prices: must reflect the Jan 2026 Rs. 500k-600k hybrid price drop. 
-            Body Kit: Mark 'Yes' ONLY if it's a known factory trim (e.g. WxB, RS, Modulo).
-            Return ONLY a raw JSON object: {"fuel":"str","cc":"str","seats":num,"rmv":"str","prices":{"exc":num,"good":num},"fittings":{"4wd":bool,"bodykit":bool},"extra":"str","trend":"str"}`;
+            const prompt = `Act as an SLIC valuer. Provide a technical assessment for a ${b} ${m} ${y} in Sri Lanka for Jan 2026. 
+            Rules: Seating (excl. driver), Engine CC/KW, RMV Class. 
+            Jan 2026 Update: Market prices dropped by Rs. 500k-600k for hybrids (e.g. Alto Hybrid, WagonR). 
+            Body Kit: 'Yes' ONLY if specific factory package. 
+            Return ONLY raw JSON: {"fuel":"str","cc":"str","seats":num,"rmv":"str","prices":{"exc":num,"good":num},"fittings":{"4wd":bool,"bodykit":bool},"extra":"str","trend":"str"}`;
 
             const targetUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-            // Use corsproxy.io to bypass browser blocks
-            const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(targetUrl);
+            const bridgeUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
 
             try {
-                const response = await fetch(proxyUrl, {
+                const response = await fetch(bridgeUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
                 });
 
-                if (!response.ok) throw new Error("CORS Proxy Failure");
-
-                const result = await response.json();
-
-                if (!result.candidates || result.candidates.length === 0) {
-                    throw new Error("AI Blocked the response for safety. Try another car.");
-                }
+                const bridgeData = await response.json();
+                if (!bridgeData.contents) throw new Error("Bridge connection failed.");
+                
+                const result = JSON.parse(bridgeData.contents);
+                if (!result.candidates) throw new Error("AI Safety Block. Try a different model name.");
 
                 const rawText = result.candidates[0].content.parts[0].text;
                 const data = JSON.parse(rawText.replace(/```json|```/g, "").trim());
@@ -90,7 +87,7 @@
                 showReport(data, b, m, y);
             } catch (e) {
                 console.error(e);
-                alert("Assessment Failed: " + e.message);
+                alert("Critical Error: " + e.message + "\nCheck if your API Key has 'Generative Language API' enabled.");
                 document.getElementById('inputCard').classList.remove('opacity-40', 'pointer-events-none');
                 document.getElementById('mainBtn').style.display = 'block';
             } finally {
@@ -105,7 +102,7 @@
             report.innerHTML = `
                 <div class="border-b-4 border-[#00ADBB] pb-4 mb-6">
                     <h2 class="text-2xl font-black uppercase text-slate-900 leading-none">${b} ${m}</h2>
-                    <p class="text-[10px] font-black text-slate-400 mt-2 tracking-widest uppercase italic">SLIC Official Assessment | YOM: ${y}</p>
+                    <p class="text-[10px] font-black text-slate-400 mt-2 tracking-widest uppercase">JAN 2026 VALUATION | YOM: ${y}</p>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3 mb-6">
@@ -155,7 +152,7 @@
                     <p class="text-[10px] leading-relaxed italic opacity-90">${data.extra}</p>
                 </div>
 
-                <p class="text-[9px] text-slate-400 leading-tight"><strong>AI Context:</strong> ${data.trend || data.analysis}</p>
+                <p class="text-[9px] text-slate-400 leading-tight italic">AI Context: ${data.trend}</p>
             `;
             document.getElementById('resultSection').classList.remove('hidden');
         }
@@ -163,9 +160,7 @@
         function downloadPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            const content = document.getElementById('reportBox').innerText;
-            doc.setFontSize(10);
-            doc.text(content, 20, 20);
+            doc.text(document.getElementById('reportBox').innerText, 20, 20);
             doc.save("SLIC_Valuation.pdf");
         }
     </script>
