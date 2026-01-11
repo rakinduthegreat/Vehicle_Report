@@ -1,0 +1,16 @@
+{
+  "name": "SLIC Vehicle Hub",
+  "short_name": "VehicleHub",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#00ADBB",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/741/741407.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
+
