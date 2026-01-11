@@ -4,85 +4,92 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SLIC Assessment Portal</title>
-    <link rel="manifest" href="manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    
     <style>
         :root { --slic-blue: #00ADBB; --slic-red: #ef4444; --slic-green: #10b981; }
-        body { background: #f8fafc; font-family: 'Segoe UI', system-ui, sans-serif; }
-        .slic-header { background: var(--slic-blue); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .card { background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 5px solid var(--slic-blue); }
-        .tick { color: var(--slic-green); font-weight: 900; }
-        .cross { color: var(--slic-red); font-weight: 900; }
-        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--slic-blue); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; display: inline-block; }
+        body { background: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; }
+        .slic-header { background: var(--slic-blue); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .card { background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border-top: 6px solid var(--slic-blue); }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--slic-blue); border-radius: 50%; width: 28px; height: 28px; animation: spin 1s linear infinite; display: inline-block; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="pb-10">
 
-    <header class="slic-header p-5 text-white flex justify-between items-center sticky top-0 z-50">
-        <h1 class="font-bold text-sm tracking-widest uppercase">SLIC AI Portal</h1>
-        <div class="bg-black/20 px-3 py-1 rounded-full text-[10px] font-black uppercase">JAN 2026</div>
+    <header class="slic-header p-6 text-white text-center mb-6">
+        <h1 class="font-black tracking-tighter text-xl uppercase">SLIC Assessment Portal</h1>
+        <p class="text-[10px] opacity-80 font-bold uppercase tracking-widest mt-1">Market Intelligence v2.1 (Jan 2026)</p>
     </header>
 
-    <main class="max-w-md mx-auto p-4 pt-6">
-        <div class="card p-6 mb-6">
+    <main class="max-w-md mx-auto p-4">
+        <div class="card p-6 mb-6" id="inputCard">
             <div class="grid grid-cols-2 gap-4">
-                <div class="col-span-1"><label class="text-[10px] font-bold text-slate-400">BRAND</label><input type="text" id="brand" class="w-full p-2 border rounded" placeholder="Nissan"></div>
-                <div class="col-span-1"><label class="text-[10px] font-bold text-slate-400">MODEL</label><input type="text" id="model" class="w-full p-2 border rounded" placeholder="Magnite"></div>
-                <div class="col-span-2"><label class="text-[10px] font-bold text-slate-400">YEAR</label><input type="number" id="year" class="w-full p-2 border rounded" placeholder="2025"></div>
+                <div class="col-span-1"><label class="text-[10px] font-bold text-slate-400 uppercase">Brand</label><input type="text" id="brand" class="w-full p-3 bg-slate-50 border rounded-lg focus:ring-2 focus:ring-[#00ADBB] outline-none transition-all" placeholder="Toyota"></div>
+                <div class="col-span-1"><label class="text-[10px] font-bold text-slate-400 uppercase">Model</label><input type="text" id="model" class="w-full p-3 bg-slate-50 border rounded-lg focus:ring-2 focus:ring-[#00ADBB] outline-none transition-all" placeholder="Aqua"></div>
+                <div class="col-span-2"><label class="text-[10px] font-bold text-slate-400 uppercase">Year of Manufacture</label><input type="number" id="year" class="w-full p-3 bg-slate-50 border rounded-lg focus:ring-2 focus:ring-[#00ADBB] outline-none transition-all" placeholder="2015"></div>
             </div>
-            <button onclick="runResearch()" id="mainBtn" class="w-full mt-6 bg-[#00ADBB] text-white font-bold py-4 rounded-xl shadow-lg uppercase text-sm">Assess Vehicle</button>
+            <button onclick="runResearch()" id="mainBtn" class="w-full mt-6 bg-[#00ADBB] text-white font-black py-4 rounded-xl shadow-lg active:scale-95 transition-all uppercase tracking-widest text-sm">Generate SLIC Report</button>
         </div>
 
-        <div id="loading" class="hidden text-center py-6">
-            <div class="loader mb-2"></div>
-            <p class="text-xs font-bold text-slate-400 uppercase">Connecting via secure bridge...</p>
+        <div id="loading" class="hidden text-center py-12">
+            <div class="loader mb-4"></div>
+            <p class="text-xs font-black text-slate-400 uppercase tracking-widest">Bypassing Security Filters...</p>
         </div>
 
-        <div id="resultSection" class="hidden">
-            <div id="reportBox" class="card p-8 bg-white text-slate-800"></div>
-            <button onclick="downloadPDF()" class="w-full mt-4 bg-slate-900 text-white font-bold py-4 rounded-xl">DOWNLOAD PDF</button>
+        <div id="resultSection" class="hidden animate-in fade-in duration-500">
+            <div id="reportBox" class="card p-8 bg-white text-slate-800 mb-4 border-none shadow-2xl"></div>
+            <button onclick="downloadPDF()" class="w-full bg-slate-900 text-white font-black py-5 rounded-2xl shadow-xl uppercase tracking-widest text-xs">Download PDF Assessment</button>
+            <button onclick="location.reload()" class="w-full mt-4 text-slate-400 font-bold text-[10px] uppercase">New Assessment</button>
         </div>
     </main>
 
     <script>
         const API_KEY = "AIzaSyBDziGfusL4KD-2gLjGPerxbY-ue3ln3VA";
-        const PROXY = "https://api.allorigins.win/raw?url="; // High-speed 2026 proxy
 
         async function runResearch() {
-            const b = document.getElementById('brand').value;
-            const m = document.getElementById('model').value;
-            const y = document.getElementById('year').value;
+            const b = document.getElementById('brand').value.trim();
+            const m = document.getElementById('model').value.trim();
+            const y = document.getElementById('year').value.trim();
             if(!b || !m || !y) return alert("Please fill all details.");
 
+            document.getElementById('inputCard').classList.add('opacity-50', 'pointer-events-none');
             document.getElementById('mainBtn').style.display = 'none';
             document.getElementById('loading').classList.remove('hidden');
 
-            const prompt = `Report for ${b} ${m} ${y} in Sri Lanka Jan 2026. 
-            Rules: Seats excl driver, Engine CC/KW, include Jan 2026 500k-600k hybrid price drop. 
-            Body kit 'Yes' ONLY if factory package.
-            Return ONLY JSON: { "fuel": "str", "cc": "str", "seats": num, "rmv": "str", "prices": {"exc": num, "good": num}, "fittings": {"4wd": bool, "bodykit": bool}, "extra": "str", "analysis": "str" }`;
+            // 2026 Assessment Logic
+            const prompt = `Act as an SLIC vehicle valuer. Provide a technical assessment for a ${b} ${m} ${y} in Sri Lanka for Jan 2026. 
+            Include: 4WD availability, Seating (excl. driver), Engine CC/KW, and RMV Class. 
+            Prices: must reflect the Jan 2026 Rs. 500k-600k hybrid price drop. 
+            Body Kit: Mark 'Yes' ONLY if it's a known factory trim (e.g. WxB, RS, Modulo).
+            Return ONLY a raw JSON object: {"fuel":"str","cc":"str","seats":num,"rmv":"str","prices":{"exc":num,"good":num},"fittings":{"4wd":bool,"bodykit":bool},"extra":"str","trend":"str"}`;
 
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-            const body = JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] });
-
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+            
             try {
-                // TRY DIRECT FIRST
-                let response = await fetch(apiUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: body });
-                
-                // IF BLOCKED, RETRY WITH PROXY
-                if (!response.ok) {
-                    console.log("Direct link failed, trying proxy bridge...");
-                    response = await fetch(PROXY + encodeURIComponent(apiUrl), { method: "POST", headers: { "Content-Type": "application/json" }, body: body });
-                }
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+
+                if (!response.ok) throw new Error("CORS or Network Error");
 
                 const result = await response.json();
-                const text = result.candidates[0].content.parts[0].text.replace(/```json|```/g, "").trim();
-                showReport(JSON.parse(text), b, m, y);
+
+                // SAFETY CHECK: This prevents the "reading '0'" error
+                if (!result.candidates || result.candidates.length === 0) {
+                    throw new Error("AI Safety Block: Try again with a different model name.");
+                }
+
+                const rawText = result.candidates[0].content.parts[0].text;
+                const cleanJson = JSON.parse(rawText.replace(/```json|```/g, "").trim());
+                
+                showReport(cleanJson, b, m, y);
             } catch (e) {
-                alert("AI Link Failed: " + e.message + ". Please ensure your API key has 'Generative Language API' enabled in Google Cloud Console.");
+                console.error(e);
+                alert("AI Error: " + e.message);
+                document.getElementById('inputCard').classList.remove('opacity-50', 'pointer-events-none');
                 document.getElementById('mainBtn').style.display = 'block';
             } finally {
                 document.getElementById('loading').classList.add('hidden');
@@ -90,27 +97,63 @@
         }
 
         function showReport(data, b, m, y) {
-            const report = document.getElementById('reportBox');
             const SI = (v) => (v * 0.85).toLocaleString();
+            const report = document.getElementById('reportBox');
+            
             report.innerHTML = `
-                <div class="border-b-4 border-[#00ADBB] pb-3 mb-6"><h2 class="text-xl font-black uppercase text-slate-900">${b} ${m}</h2><p class="text-[9px] font-bold text-slate-400">YOM: ${y} | VALUATION: JAN 2026</p></div>
-                <div class="grid grid-cols-2 gap-3 mb-6 text-xs font-bold bg-slate-50 p-3 rounded border">
-                    <div><span class="text-[8px] text-slate-400 block">FUEL</span> ${data.fuel}</div>
-                    <div><span class="text-[8px] text-slate-400 block">CAPACITY</span> ${data.cc}</div>
-                    <div class="text-[#00ADBB]"><span class="text-[8px] text-slate-400 block uppercase">Seats (Excl Driver)</span> ${data.seats}</div>
-                    <div><span class="text-[8px] text-slate-400 block uppercase">RMV Class</span> ${data.rmv}</div>
+                <div class="border-b-4 border-[#00ADBB] pb-4 mb-6">
+                    <h2 class="text-2xl font-black uppercase text-slate-900 leading-none">${b} ${m}</h2>
+                    <p class="text-[10px] font-black text-slate-400 mt-2 tracking-widest uppercase">Assessment: JAN 2026 | YOM: ${y}</p>
                 </div>
-                <table class="w-full text-xs mb-6 border">
-                    <tr class="bg-slate-50 text-[9px] uppercase"><th class="p-2 border">Condition</th><th class="p-2 border">Market</th><th class="p-2 border text-red-600">85% SI</th></tr>
-                    <tr><td class="p-2 border font-bold">Excellent</td><td class="p-2 border">${data.prices.exc.toLocaleString()}</td><td class="p-2 border font-black text-red-600">${SI(data.prices.exc)}</td></tr>
-                    <tr><td class="p-2 border font-bold">Good</td><td class="p-2 border">${data.prices.good.toLocaleString()}</td><td class="p-2 border font-bold">${SI(data.prices.good)}</td></tr>
-                </table>
-                <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px] mb-6">
-                    <div class="flex justify-between border-b py-1"><span>4WD</span> <span class="${data.fittings['4wd'] ? 'tick':'cross'}">${data.fittings['4wd'] ? '✔':'✘'}</span></div>
-                    <div class="flex justify-between border-b py-1"><span>Body Kit</span> <span class="${data.fittings.bodykit ? 'tick':'cross'}">${data.fittings.bodykit ? '✔':'✘'}</span></div>
+
+                <div class="grid grid-cols-2 gap-3 mb-6">
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <span class="text-[8px] font-black text-slate-400 block uppercase">Fuel Type</span>
+                        <span class="text-xs font-bold">${data.fuel}</span>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <span class="text-[8px] font-black text-slate-400 block uppercase">Capacity</span>
+                        <span class="text-xs font-bold">${data.cc}</span>
+                    </div>
+                    <div class="bg-cyan-50 p-3 rounded-xl border border-cyan-100">
+                        <span class="text-[8px] font-black text-[#00ADBB] block uppercase">Seats (Excl. Driver)</span>
+                        <span class="text-xs font-black text-[#00ADBB]">${data.seats} Seats</span>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <span class="text-[8px] font-black text-slate-400 block uppercase">RMV Class</span>
+                        <span class="text-xs font-bold">${data.rmv}</span>
+                    </div>
                 </div>
-                <div class="bg-blue-50 p-3 rounded text-[10px] italic text-slate-600 mb-4 border-l-4 border-[#00ADBB]"><strong>Extras:</strong> ${data.extra}</div>
-                <p class="text-[9px] text-slate-400"><strong>AI Trend:</strong> ${data.analysis}</p>
+
+                <div class="mb-6 overflow-hidden rounded-xl border border-slate-200">
+                    <table class="w-full text-xs text-left">
+                        <thead class="bg-slate-900 text-white text-[9px] uppercase tracking-widest">
+                            <tr><th class="p-3">Condition</th><th class="p-3">Market Price</th><th class="p-3 text-red-400">85% SI</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr><td class="p-3 font-bold">Excellent</td><td class="p-3 text-slate-500">${data.prices.exc.toLocaleString()}</td><td class="p-3 font-black text-red-600">${SI(data.prices.exc)}</td></tr>
+                            <tr><td class="p-3 font-bold">Good</td><td class="p-3 text-slate-500">${data.prices.good.toLocaleString()}</td><td class="p-3 font-black text-slate-900">${SI(data.prices.good)}</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="space-y-2 mb-6 text-[11px] font-bold">
+                    <div class="flex justify-between items-center py-2 border-b border-slate-50">
+                        <span>4 Wheel Drive Availability</span>
+                        <span class="${data.fittings['4wd'] ? 'text-green-500':'text-red-500'} text-lg">${data.fittings['4wd'] ? '✔':'✘'}</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2 border-b border-slate-50">
+                        <span>Modified Buffer / Body Kit</span>
+                        <span class="${data.fittings.bodykit ? 'text-green-500':'text-red-500'} text-lg">${data.fittings.bodykit ? '✔':'✘'}</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 p-4 rounded-xl text-white mb-4">
+                    <p class="text-[8px] font-black uppercase tracking-widest text-[#00ADBB] mb-1">Additional High-Value Fittings</p>
+                    <p class="text-[10px] leading-relaxed italic opacity-90">${data.extra}</p>
+                </div>
+
+                <p class="text-[9px] text-slate-400 leading-tight"><strong>Note:</strong> ${data.trend || data.analysis}</p>
             `;
             document.getElementById('resultSection').classList.remove('hidden');
         }
@@ -118,9 +161,8 @@
         function downloadPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.setFontSize(10);
-            doc.text(document.getElementById('reportBox').innerText, 15, 20);
-            doc.save(`SLIC_${document.getElementById('model').value}_2026.pdf`);
+            doc.text(document.getElementById('reportBox').innerText, 20, 20);
+            doc.save(`SLIC_Report_${Date.now()}.pdf`);
         }
     </script>
 </body>
