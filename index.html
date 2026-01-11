@@ -3,214 +3,217 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SLIC Assessment Hub</title>
+    <title>SLIC Master Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        :root { --slic-blue: #00ADBB; --slic-green: #10b981; --slic-red: #ef4444; }
-        body { background: #f1f5f9; font-family: 'Inter', system-ui, sans-serif; }
-        .slic-card { background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border-top: 6px solid var(--slic-blue); }
-        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--slic-blue); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; display: inline-block; }
+        :root { --slic-blue: #00ADBB; }
+        body { background: #f8fafc; font-family: 'Segoe UI', system-ui, sans-serif; }
+        .slic-card { background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-top: 6px solid var(--slic-blue); }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--slic-blue); border-radius: 50%; width: 28px; height: 28px; animation: spin 1s linear infinite; display: inline-block; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .debug-panel { background: #1a202c; color: #48bb78; font-family: monospace; font-size: 10px; padding: 10px; border-radius: 8px; margin-top: 10px; max-height: 150px; overflow-y: auto; }
+        .debug-panel { background: #0f172a; color: #10b981; font-family: 'Courier New', monospace; font-size: 10px; padding: 12px; border-radius: 8px; margin-top: 10px; max-height: 200px; overflow-y: auto; border: 1px solid #1e293b; }
     </style>
 </head>
-<body class="p-4">
+<body class="p-4 md:p-10">
 
-    <div class="max-w-md mx-auto">
-        <div class="flex items-center justify-between mb-6">
+    <div class="max-w-lg mx-auto">
+        <div class="flex items-center justify-between mb-8">
             <div>
-                <h1 class="text-2xl font-black text-slate-800 tracking-tighter italic uppercase">SLIC <span class="text-[#00ADBB]">HUB</span></h1>
-                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Valuation v3.0 | 2026</p>
+                <h1 class="text-3xl font-black text-slate-900 italic tracking-tighter uppercase">SLIC <span class="text-[#00ADBB]">GENERAL</span></h1>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">Valuation Intelligence Hub 2026</p>
             </div>
-            <button onclick="toggleDebug()" class="text-[8px] bg-slate-200 px-2 py-1 rounded font-bold uppercase text-slate-500">Debug Mode</button>
+            <button onclick="document.getElementById('debugContainer').classList.toggle('hidden')" class="bg-slate-200 text-slate-500 text-[9px] font-black px-3 py-1 rounded-full uppercase">Debug Console</button>
         </div>
 
-        <div class="slic-card p-6 mb-6" id="formCard">
-            <div class="grid grid-cols-2 gap-3 mb-4">
+        <div id="debugContainer" class="hidden mb-6">
+            <div id="debugLog" class="debug-panel">System Initialized. Ready for Assessment.</div>
+        </div>
+
+        <div class="slic-card p-8 mb-6" id="inputForm">
+            <div class="grid grid-cols-2 gap-4 mb-6">
                 <div class="col-span-1">
-                    <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Brand</label>
-                    <input type="text" id="brand" class="w-full p-2 bg-slate-50 border rounded-lg text-sm outline-none" placeholder="Toyota">
+                    <label class="text-[10px] font-black text-slate-400 uppercase mb-1 block">Vehicle Brand</label>
+                    <input type="text" id="brand" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-[#00ADBB]" placeholder="e.g. Toyota">
                 </div>
                 <div class="col-span-1">
-                    <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Model</label>
-                    <input type="text" id="model" class="w-full p-2 bg-slate-50 border rounded-lg text-sm outline-none" placeholder="Vitz">
+                    <label class="text-[10px] font-black text-slate-400 uppercase mb-1 block">Model Name</label>
+                    <input type="text" id="model" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-[#00ADBB]" placeholder="e.g. Aqua">
                 </div>
                 <div class="col-span-2">
-                    <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Year (YOM)</label>
-                    <input type="number" id="year" class="w-full p-2 bg-slate-50 border rounded-lg text-sm outline-none" placeholder="2018">
+                    <label class="text-[10px] font-black text-slate-400 uppercase mb-1 block">Year of Manufacture (YOM)</label>
+                    <input type="number" id="year" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none" placeholder="2018">
                 </div>
                 <div class="col-span-1">
-                    <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Chassis No (Opt)</label>
-                    <input type="text" id="chassis" class="w-full p-2 bg-slate-50 border rounded-lg text-sm outline-none" placeholder="KSP130-...">
+                    <label class="text-[10px] font-black text-slate-400 uppercase mb-1 block">Chassis Number</label>
+                    <input type="text" id="chassis" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none" placeholder="Optional">
                 </div>
                 <div class="col-span-1">
-                    <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Engine No (Opt)</label>
-                    <input type="text" id="engine" class="w-full p-2 bg-slate-50 border rounded-lg text-sm outline-none" placeholder="1KR-...">
+                    <label class="text-[10px] font-black text-slate-400 uppercase mb-1 block">Engine Number</label>
+                    <input type="text" id="engine" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none" placeholder="Optional">
                 </div>
             </div>
-            <button onclick="runValuation()" id="submitBtn" class="w-full bg-[#00ADBB] text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest text-xs active:scale-95 transition-all">Generate SLIC Report</button>
+            <button onclick="startAssessment()" id="submitBtn" class="w-full bg-[#00ADBB] hover:bg-[#008a96] text-white font-black py-5 rounded-2xl shadow-xl uppercase tracking-[0.2em] text-sm transition-all active:scale-95">Run Technical Assessment</button>
         </div>
 
-        <div id="debugView" class="hidden mb-6">
-            <p class="text-[8px] font-bold text-slate-400 uppercase mb-1">System Console</p>
-            <div id="debugLog" class="debug-panel">Waiting for process...</div>
+        <div id="loading" class="hidden text-center py-12">
+            <div class="loader mb-4"></div>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest animate-pulse">Routing via AllOrigins Bridge...</p>
         </div>
 
-        <div id="loading" class="hidden text-center py-10">
-            <div class="loader mb-2"></div>
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Handshaking with Gemini API...</p>
-        </div>
-
-        <div id="resultArea" class="hidden">
-            <div id="reportBox" class="slic-card p-6 mb-4"></div>
-            <div class="grid grid-cols-2 gap-2">
-                <button onclick="downloadPDF()" class="bg-slate-900 text-white font-black py-4 rounded-xl uppercase text-[10px] tracking-widest shadow-lg">Download PDF</button>
-                <button onclick="location.reload()" class="bg-white border text-slate-400 font-black py-4 rounded-xl uppercase text-[10px] tracking-widest">New Query</button>
+        <div id="resultSection" class="hidden">
+            <div id="reportBox" class="slic-card p-8 bg-white mb-6"></div>
+            <div class="flex gap-4">
+                <button onclick="downloadPDF()" class="flex-1 bg-slate-900 text-white font-black py-5 rounded-2xl uppercase text-[10px] tracking-widest shadow-xl">Generate PDF Document</button>
+                <button onclick="location.reload()" class="px-6 bg-white border-2 border-slate-200 text-slate-400 font-black py-5 rounded-2xl uppercase text-[10px]">Reset</button>
             </div>
         </div>
     </div>
 
     <script>
         const API_KEY = "AIzaSyBDziGfusL4KD-2gLjGPerxbY-ue3ln3VA";
-        let isDebug = false;
 
         function log(msg) {
-            console.log(msg);
-            const logDiv = document.getElementById('debugLog');
-            logDiv.innerHTML += `<br>> ${msg}`;
-            logDiv.scrollTop = logDiv.scrollHeight;
+            const div = document.getElementById('debugLog');
+            div.innerHTML += `<br>[${new Date().toLocaleTimeString()}] > ${msg}`;
+            div.scrollTop = div.scrollHeight;
         }
 
-        function toggleDebug() {
-            isDebug = !isDebug;
-            document.getElementById('debugView').classList.toggle('hidden');
-            log("Debug mode enabled.");
-        }
+        async function startAssessment() {
+            const b = document.getElementById('brand').value.trim();
+            const m = document.getElementById('model').value.trim();
+            const y = document.getElementById('year').value.trim();
+            const ch = document.getElementById('chassis').value.trim() || "N/A";
+            const en = document.getElementById('engine').value.trim() || "N/A";
 
-        async function runValuation() {
-            const brand = document.getElementById('brand').value.trim();
-            const model = document.getElementById('model').value.trim();
-            const year = document.getElementById('year').value.trim();
-            const chassis = document.getElementById('chassis').value.trim() || "N/A";
-            const engine = document.getElementById('engine').value.trim() || "N/A";
+            if(!b || !m || !y) return alert("Required fields: Brand, Model, Year.");
 
-            if(!brand || !model || !year) return alert("Fill Brand, Model and Year.");
-
-            document.getElementById('formCard').classList.add('hidden');
+            document.getElementById('inputForm').classList.add('hidden');
             document.getElementById('loading').classList.remove('hidden');
-            log(`Initiating assessment for ${brand} ${model}...`);
+            log(`Analyzing ${b} ${m} (${y})...`);
 
-            const prompt = `Data Extraction Task: Provide technical specs and historical valuation for ${brand} ${model} ${year} in Sri Lanka. 
-            Format: JSON only. 
-            Required fields: fuel, cc (in CC/KW), seats (excl driver), rmv (class), prices (exc & good), fittings (4wd & bodykit as bool), extra (high-value fittings), trend (Jan 2026 market context). 
-            Logic: Hybrid values dropped 600k in Jan 2026. 
-            Structure: {"fuel":"str","cc":"str","seats":num,"rmv":"str","prices":{"exc":num,"good":num},"fittings":{"4wd":bool,"bodykit":bool},"extra":"str","trend":"str"}`;
+            const prompt = `Act as SLIC General Valuer. Return ONLY raw JSON for ${b} ${m} ${y} in Sri Lanka. 
+            Jan 2026 Context: Hybrid prices down 600k. 
+            Fields: fuel, cc (Engine CC), seats (excl driver), rmv (Class), prices (exc & good condition), fittings (4wd & bodykit as bool), extra (dealer accessories), trend (market note). 
+            JSON Schema: {"fuel":"","cc":"","seats":0,"rmv":"","prices":{"exc":0,"good":0},"fittings":{"4wd":false,"bodykit":false},"extra":"","trend":""}`;
 
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent?key=${API_KEY}`;
             const payload = {
                 contents: [{ parts: [{ text: prompt }] }],
                 safetySettings: [
-                    { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-                    { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-                    { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
-                    { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" },
-                    { category: "HARM_CATEGORY_CIVIC_INTEGRITY", threshold: "BLOCK_NONE" }
+                    { category: "HARM_CATEGORY_HARASSMENT", threshold: "OFF" },
+                    { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "OFF" },
+                    { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "OFF" },
+                    { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "OFF" },
+                    { category: "HARM_CATEGORY_CIVIC_INTEGRITY", threshold: "OFF" }
                 ]
             };
 
             try {
-                log("Attempting direct connection to Google...");
-                let response = await fetch(url, {
+                log("Executing Bridge Post...");
+                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+                
+                const response = await fetch(proxyUrl, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
 
-                if (!response.ok) {
-                    log("Direct connection blocked by CORS. Switching to AllOrigins Proxy...");
-                    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-                    response = await fetch(proxyUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
+                const outerData = await response.json();
+                
+                // --- ROBUST UNWRAPPER ---
+                if (!outerData.contents) throw new Error("Bridge connection timed out.");
+                
+                const innerData = JSON.parse(outerData.contents);
+                log("Proxy data unwrapped.");
+
+                if (!innerData.candidates || innerData.candidates.length === 0) {
+                    throw new Error("AI refused request due to content policy.");
                 }
 
-                const data = await response.json();
-                log("Data received. Parsing contents...");
+                const rawContent = innerData.candidates[0].content.parts[0].text;
+                const json = JSON.parse(rawContent.replace(/```json|```/g, "").trim());
+                
+                log("Success. Building report.");
+                renderReport(json, b, m, y, ch, en);
 
-                let finalResult;
-                if (data.contents) { // If it came through the proxy
-                    const parsed = JSON.parse(data.contents);
-                    finalResult = parsed.candidates[0].content.parts[0].text;
-                } else { // If it came directly
-                    finalResult = data.candidates[0].content.parts[0].text;
-                }
-
-                const json = JSON.parse(finalResult.replace(/```json|```/g, "").trim());
-                log("Success. Rendering report.");
-                showReport(json, brand, model, year, chassis, engine);
-
-            } catch (e) {
-                log(`ERROR: ${e.message}`);
-                alert("Assessment Failed. See Debug Console.");
-            } finally {
+            } catch (err) {
+                log(`CRITICAL: ${err.message}`);
+                alert("Assessment Error: See Debug Console.");
+                document.getElementById('inputForm').classList.remove('hidden');
                 document.getElementById('loading').classList.add('hidden');
             }
         }
 
-        function showReport(data, b, m, y, ch, en) {
-            const SI = (v) => (v * 0.85).toLocaleString();
-            const report = document.getElementById('reportBox');
+        function renderReport(data, b, m, y, ch, en) {
+            const si = (v) => (v * 0.85).toLocaleString();
+            const box = document.getElementById('reportBox');
             
-            report.innerHTML = `
+            box.innerHTML = `
                 <div class="border-b-4 border-[#00ADBB] pb-4 mb-6">
-                    <h2 class="text-xl font-black uppercase text-slate-800">${b} ${m}</h2>
-                    <p class="text-[9px] font-bold text-slate-400 mt-1 uppercase tracking-widest italic">VALUATION: JAN 2026 | YOM: ${y}</p>
+                    <h2 class="text-2xl font-black text-slate-900 uppercase italic leading-none">${b} ${m}</h2>
+                    <p class="text-[10px] font-black text-slate-400 mt-2 uppercase tracking-[0.2em]">Official Assessment | ${y} Generation</p>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3 mb-6 text-[10px]">
-                    <div class="col-span-2 grid grid-cols-2 gap-2 bg-slate-100 p-2 rounded mb-2 font-mono text-[9px]">
-                        <div>CHASSIS: ${ch}</div>
-                        <div>ENGINE: ${en}</div>
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="col-span-2 bg-slate-900 text-white p-3 rounded-xl font-mono text-[9px] flex justify-between">
+                        <span>CHASSIS: ${ch}</span>
+                        <span>ENGINE: ${en}</span>
                     </div>
-                    <div class="bg-slate-50 p-2 rounded border"><span>Fuel:</span> <b>${data.fuel}</b></div>
-                    <div class="bg-slate-50 p-2 rounded border"><span>Capacity:</span> <b>${data.cc}</b></div>
-                    <div class="bg-cyan-50 p-2 rounded border border-cyan-100"><span class="text-[#00ADBB]">Seats (Excl Drv):</span> <b class="text-[#00ADBB]">${data.seats}</b></div>
-                    <div class="bg-slate-50 p-2 rounded border"><span>RMV Class:</span> <b>${data.rmv}</b></div>
+                    <div class="p-3 bg-slate-50 rounded-xl border">
+                        <span class="text-[8px] font-black text-slate-400 block uppercase">Fuel Type</span>
+                        <span class="text-xs font-bold">${data.fuel}</span>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-xl border">
+                        <span class="text-[8px] font-black text-slate-400 block uppercase">Engine Capacity</span>
+                        <span class="text-xs font-bold">${data.cc}</span>
+                    </div>
+                    <div class="p-3 bg-cyan-50 rounded-xl border border-cyan-100">
+                        <span class="text-[8px] font-black text-[#00ADBB] block uppercase">Seats (Excl Drv)</span>
+                        <span class="text-xs font-black text-[#00ADBB]">${data.seats} Seats</span>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-xl border">
+                        <span class="text-[8px] font-black text-slate-400 block uppercase">RMV Class</span>
+                        <span class="text-xs font-bold">${data.rmv}</span>
+                    </div>
                 </div>
 
-                <div class="mb-6 rounded-lg border overflow-hidden">
-                    <table class="w-full text-[11px] text-left">
-                        <thead class="bg-slate-900 text-white text-[8px] uppercase">
-                            <tr><th class="p-2">Condition</th><th class="p-2">Market</th><th class="p-2 text-red-400">85% SI</th></tr>
+                <div class="mb-6 rounded-2xl border overflow-hidden">
+                    <table class="w-full text-xs text-left">
+                        <thead class="bg-slate-50 text-[9px] font-black text-slate-500 uppercase tracking-widest">
+                            <tr><th class="p-4">Condition</th><th class="p-4">Market Val</th><th class="p-4 text-red-500">85% SI</th></tr>
                         </thead>
-                        <tbody class="divide-y">
-                            <tr><td class="p-2 font-bold">Excellent</td><td class="p-2 text-slate-400">${data.prices.exc.toLocaleString()}</td><td class="p-2 font-black text-red-600">${SI(data.prices.exc)}</td></tr>
-                            <tr><td class="p-2 font-bold">Good</td><td class="p-2 text-slate-500">${data.prices.good.toLocaleString()}</td><td class="p-2 font-black text-slate-900">${SI(data.prices.good)}</td></tr>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr><td class="p-4 font-bold">Excellent</td><td class="p-4 text-slate-400">${data.prices.exc.toLocaleString()}</td><td class="p-4 font-black text-red-600">Rs. ${si(data.prices.exc)}</td></tr>
+                            <tr><td class="p-4 font-bold">Good</td><td class="p-4 text-slate-500">${data.prices.good.toLocaleString()}</td><td class="p-4 font-black text-slate-900">Rs. ${si(data.prices.good)}</td></tr>
                         </tbody>
                     </table>
                 </div>
 
-                <div class="space-y-2 mb-6 text-[10px] font-black uppercase">
-                    <div class="flex justify-between"><span>4-Wheel Drive</span><span class="${data.fittings['4wd'] ? 'text-green-500':'text-red-500'}">${data.fittings['4wd'] ? '✔':'✘'}</span></div>
-                    <div class="flex justify-between"><span>Body Kit (OEM)</span><span class="${data.fittings.bodykit ? 'text-green-500':'text-red-500'}">${data.fittings.bodykit ? '✔':'✘'}</span></div>
+                <div class="space-y-3 mb-6">
+                    <div class="flex justify-between items-center text-[10px] font-black uppercase">
+                        <span>4 Wheel Drive Availability</span>
+                        <span class="${data.fittings['4wd'] ? 'text-green-500':'text-red-500'} text-xl">${data.fittings['4wd'] ? '✔':'✘'}</span>
+                    </div>
+                    <div class="flex justify-between items-center text-[10px] font-black uppercase">
+                        <span>Modified Buffer / Body Kit</span>
+                        <span class="${data.fittings.bodykit ? 'text-green-500':'text-red-500'} text-xl">${data.fittings.bodykit ? '✔':'✘'}</span>
+                    </div>
                 </div>
 
-                <div class="bg-slate-800 p-4 rounded-xl text-white mb-2">
-                    <p class="text-[8px] font-black uppercase text-[#00ADBB] mb-1 tracking-widest">High-Value Fittings</p>
-                    <p class="text-[10px] italic opacity-80">${data.extra}</p>
+                <div class="bg-[#00ADBB] p-5 rounded-2xl text-white shadow-inner">
+                    <p class="text-[9px] font-black uppercase tracking-widest mb-1 opacity-70">Additional High-Value Fittings</p>
+                    <p class="text-[11px] leading-relaxed italic font-medium">${data.extra}</p>
                 </div>
             `;
-            document.getElementById('resultArea').classList.remove('hidden');
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('resultSection').classList.remove('hidden');
         }
 
         function downloadPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             doc.text(document.getElementById('reportBox').innerText, 20, 20);
-            doc.save(`SLIC_${Date.now()}.pdf`);
+            doc.save("SLIC_Valuation_Report.pdf");
         }
     </script>
 </body>
