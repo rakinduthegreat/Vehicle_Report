@@ -5,14 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SLIC Assessment Portal</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icon.png">
-    <meta name="theme-color" content="#00ADBB">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
     <style>
         :root { --slic-blue: #00ADBB; --slic-red: #ef4444; --slic-green: #10b981; }
-        body { background: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
-        .slic-header { background: var(--slic-blue); }
+        body { background: #f8fafc; font-family: 'Segoe UI', system-ui, sans-serif; }
+        .slic-header { background: var(--slic-blue); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .card { background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 5px solid var(--slic-blue); }
         .tick { color: var(--slic-green); font-weight: 900; }
         .cross { color: var(--slic-red); font-weight: 900; }
@@ -23,24 +22,24 @@
 <body class="pb-10">
 
     <header class="slic-header p-5 text-white flex justify-between items-center sticky top-0 z-50">
-        <div class="flex items-center gap-3">
-            <img src="icon.png" class="w-8 h-8 rounded-full" onerror="this.src='https://via.placeholder.com/32/00ADBB/FFFFFF?text=SL'">
-            <h1 class="font-bold text-sm tracking-widest uppercase">SLIC AI Portal</h1>
-        </div>
-        <div class="bg-black/20 px-3 py-1 rounded-full text-[10px] font-black uppercase">Jan 2026</div>
+        <h1 class="font-bold text-sm tracking-widest uppercase">SLIC AI Portal</h1>
+        <div class="bg-black/20 px-3 py-1 rounded-full text-[10px] font-black uppercase">JAN 2026</div>
     </header>
 
     <main class="max-w-md mx-auto p-4 pt-6">
         <div class="card p-6 mb-6">
             <div class="grid grid-cols-2 gap-4">
-                <div class="col-span-1"><label class="text-[10px] font-bold text-slate-400 uppercase">Brand</label><input type="text" id="brand" class="w-full p-2 border rounded" placeholder="Toyota"></div>
-                <div class="col-span-1"><label class="text-[10px] font-bold text-slate-400 uppercase">Model</label><input type="text" id="model" class="w-full p-2 border rounded" placeholder="Axio"></div>
-                <div class="col-span-2"><label class="text-[10px] font-bold text-slate-400 uppercase">Year</label><input type="number" id="year" class="w-full p-2 border rounded" placeholder="2018"></div>
+                <div class="col-span-1"><label class="text-[10px] font-bold text-slate-400">BRAND</label><input type="text" id="brand" class="w-full p-2 border rounded" placeholder="Nissan"></div>
+                <div class="col-span-1"><label class="text-[10px] font-bold text-slate-400">MODEL</label><input type="text" id="model" class="w-full p-2 border rounded" placeholder="Magnite"></div>
+                <div class="col-span-2"><label class="text-[10px] font-bold text-slate-400">YEAR</label><input type="number" id="year" class="w-full p-2 border rounded" placeholder="2025"></div>
             </div>
             <button onclick="runResearch()" id="mainBtn" class="w-full mt-6 bg-[#00ADBB] text-white font-bold py-4 rounded-xl shadow-lg uppercase text-sm">Assess Vehicle</button>
         </div>
 
-        <div id="loading" class="hidden text-center py-6"><div class="loader mb-2"></div><p class="text-xs font-bold text-slate-400 uppercase">Connecting to Google AI...</p></div>
+        <div id="loading" class="hidden text-center py-6">
+            <div class="loader mb-2"></div>
+            <p class="text-xs font-bold text-slate-400 uppercase">Connecting via secure bridge...</p>
+        </div>
 
         <div id="resultSection" class="hidden">
             <div id="reportBox" class="card p-8 bg-white text-slate-800"></div>
@@ -48,44 +47,42 @@
         </div>
     </main>
 
-    <script type="module">
-        // Using a direct module approach for 2026 compatibility
+    <script>
         const API_KEY = "AIzaSyBDziGfusL4KD-2gLjGPerxbY-ue3ln3VA";
+        const PROXY = "https://api.allorigins.win/raw?url="; // High-speed 2026 proxy
 
-        window.runResearch = async function() {
+        async function runResearch() {
             const b = document.getElementById('brand').value;
             const m = document.getElementById('model').value;
             const y = document.getElementById('year').value;
-            if(!b || !m || !y) return alert("Fill all details.");
+            if(!b || !m || !y) return alert("Please fill all details.");
 
             document.getElementById('mainBtn').style.display = 'none';
             document.getElementById('loading').classList.remove('hidden');
 
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-            
-            const payload = {
-                contents: [{ parts: [{ text: `Assess ${b} ${m} ${y} for Sri Lanka (Jan 2026). Exclude driver from seats. Mark Body Kit 'Yes' ONLY if factory trim. Include Rs. 500k-600k hybrid price drop. Return JSON: { "fuel": "str", "cc": "str", "seats": num, "rmv": "str", "prices": {"exc": num, "good": num}, "fittings": {"4wd": bool, "bodykit": bool}, "extra": "str", "analysis": "str" }` }] }]
-            };
+            const prompt = `Report for ${b} ${m} ${y} in Sri Lanka Jan 2026. 
+            Rules: Seats excl driver, Engine CC/KW, include Jan 2026 500k-600k hybrid price drop. 
+            Body kit 'Yes' ONLY if factory package.
+            Return ONLY JSON: { "fuel": "str", "cc": "str", "seats": num, "rmv": "str", "prices": {"exc": num, "good": num}, "fittings": {"4wd": bool, "bodykit": bool}, "extra": "str", "analysis": "str" }`;
+
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+            const body = JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] });
 
             try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.json();
+                // TRY DIRECT FIRST
+                let response = await fetch(apiUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: body });
                 
-                if (result.error) {
-                    throw new Error(result.error.message);
+                // IF BLOCKED, RETRY WITH PROXY
+                if (!response.ok) {
+                    console.log("Direct link failed, trying proxy bridge...");
+                    response = await fetch(PROXY + encodeURIComponent(apiUrl), { method: "POST", headers: { "Content-Type": "application/json" }, body: body });
                 }
 
-                const textResult = result.candidates[0].content.parts[0].text;
-                const data = JSON.parse(textResult.replace(/```json|```/g, "").trim());
-                showReport(data, b, m, y);
+                const result = await response.json();
+                const text = result.candidates[0].content.parts[0].text.replace(/```json|```/g, "").trim();
+                showReport(JSON.parse(text), b, m, y);
             } catch (e) {
-                console.error(e);
-                alert("Connection Error: " + e.message + "\n\nTry opening this site in a 'New Incognito Window' or clear your browser cache.");
+                alert("AI Link Failed: " + e.message + ". Please ensure your API key has 'Generative Language API' enabled in Google Cloud Console.");
                 document.getElementById('mainBtn').style.display = 'block';
             } finally {
                 document.getElementById('loading').classList.add('hidden');
@@ -96,33 +93,34 @@
             const report = document.getElementById('reportBox');
             const SI = (v) => (v * 0.85).toLocaleString();
             report.innerHTML = `
-                <div class="border-b-4 border-[#00ADBB] pb-3 mb-6"><h2 class="text-xl font-black uppercase">${b} ${m}</h2><p class="text-[9px] font-bold text-slate-400 uppercase">YOM: ${y} | JAN 2026</p></div>
+                <div class="border-b-4 border-[#00ADBB] pb-3 mb-6"><h2 class="text-xl font-black uppercase text-slate-900">${b} ${m}</h2><p class="text-[9px] font-bold text-slate-400">YOM: ${y} | VALUATION: JAN 2026</p></div>
                 <div class="grid grid-cols-2 gap-3 mb-6 text-xs font-bold bg-slate-50 p-3 rounded border">
-                    <div><span class="text-[8px] text-slate-400 block uppercase">Fuel</span> ${data.fuel}</div>
-                    <div><span class="text-[8px] text-slate-400 block uppercase">Capacity</span> ${data.cc}</div>
+                    <div><span class="text-[8px] text-slate-400 block">FUEL</span> ${data.fuel}</div>
+                    <div><span class="text-[8px] text-slate-400 block">CAPACITY</span> ${data.cc}</div>
                     <div class="text-[#00ADBB]"><span class="text-[8px] text-slate-400 block uppercase">Seats (Excl Driver)</span> ${data.seats}</div>
                     <div><span class="text-[8px] text-slate-400 block uppercase">RMV Class</span> ${data.rmv}</div>
                 </div>
                 <table class="w-full text-xs mb-6 border">
                     <tr class="bg-slate-50 text-[9px] uppercase"><th class="p-2 border">Condition</th><th class="p-2 border">Market</th><th class="p-2 border text-red-600">85% SI</th></tr>
                     <tr><td class="p-2 border font-bold">Excellent</td><td class="p-2 border">${data.prices.exc.toLocaleString()}</td><td class="p-2 border font-black text-red-600">${SI(data.prices.exc)}</td></tr>
-                    <tr><td class="p-2 border">Good</td><td class="p-2 border">${data.prices.good.toLocaleString()}</td><td class="p-2 border font-bold">${SI(data.prices.good)}</td></tr>
+                    <tr><td class="p-2 border font-bold">Good</td><td class="p-2 border">${data.prices.good.toLocaleString()}</td><td class="p-2 border font-bold">${SI(data.prices.good)}</td></tr>
                 </table>
                 <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px] mb-6">
                     <div class="flex justify-between border-b py-1"><span>4WD</span> <span class="${data.fittings['4wd'] ? 'tick':'cross'}">${data.fittings['4wd'] ? '✔':'✘'}</span></div>
                     <div class="flex justify-between border-b py-1"><span>Body Kit</span> <span class="${data.fittings.bodykit ? 'tick':'cross'}">${data.fittings.bodykit ? '✔':'✘'}</span></div>
                 </div>
-                <div class="bg-[#e0f7f9] p-3 rounded text-[10px] italic text-slate-600 mb-4 border-l-4 border-[#00ADBB]"><strong>Extras:</strong> ${data.extra}</div>
-                <p class="text-[9px] text-slate-400"><strong>Note:</strong> ${data.analysis}</p>
+                <div class="bg-blue-50 p-3 rounded text-[10px] italic text-slate-600 mb-4 border-l-4 border-[#00ADBB]"><strong>Extras:</strong> ${data.extra}</div>
+                <p class="text-[9px] text-slate-400"><strong>AI Trend:</strong> ${data.analysis}</p>
             `;
             document.getElementById('resultSection').classList.remove('hidden');
         }
 
-        window.downloadPDF = function() {
+        function downloadPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
+            doc.setFontSize(10);
             doc.text(document.getElementById('reportBox').innerText, 15, 20);
-            doc.save("SLIC_Report.pdf");
+            doc.save(`SLIC_${document.getElementById('model').value}_2026.pdf`);
         }
     </script>
 </body>
