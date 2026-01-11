@@ -12,77 +12,102 @@
         .slic-card { background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border-top: 6px solid var(--slic-blue); }
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--slic-blue); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; display: inline-block; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .text-slic { color: var(--slic-blue); }
-        .bg-slic { background-color: var(--slic-blue); }
+        .debug-panel { background: #1a202c; color: #48bb78; font-family: monospace; font-size: 10px; padding: 10px; border-radius: 8px; margin-top: 10px; max-height: 150px; overflow-y: auto; }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="p-4">
 
     <div class="max-w-md mx-auto">
-        <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center justify-between mb-6">
             <div>
-                <h1 class="text-2xl font-black text-slate-800 tracking-tighter italic uppercase">SLIC <span class="text-slic">HUB</span></h1>
-                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Valuation Intelligence 2026</p>
+                <h1 class="text-2xl font-black text-slate-800 tracking-tighter italic uppercase">SLIC <span class="text-[#00ADBB]">HUB</span></h1>
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Valuation v3.0 | 2026</p>
             </div>
-            <div class="bg-slic text-white text-[10px] font-black px-3 py-1 rounded-full uppercase">Live</div>
+            <button onclick="toggleDebug()" class="text-[8px] bg-slate-200 px-2 py-1 rounded font-bold uppercase text-slate-500">Debug Mode</button>
         </div>
 
-        <div class="slic-card p-6 mb-6" id="inputSection">
-            <div class="space-y-4">
-                <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase block mb-1">Vehicle Brand</label>
-                    <input type="text" id="brand" class="w-full p-3 bg-slate-50 border rounded-lg focus:ring-2 focus:ring-cyan-500 outline-none" placeholder="e.g. Toyota">
+        <div class="slic-card p-6 mb-6" id="formCard">
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="col-span-1">
+                    <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Brand</label>
+                    <input type="text" id="brand" class="w-full p-2 bg-slate-50 border rounded-lg text-sm outline-none" placeholder="Toyota">
                 </div>
-                <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase block mb-1">Vehicle Model</label>
-                    <input type="text" id="model" class="w-full p-3 bg-slate-50 border rounded-lg focus:ring-2 focus:ring-cyan-500 outline-none" placeholder="e.g. Vitz">
+                <div class="col-span-1">
+                    <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Model</label>
+                    <input type="text" id="model" class="w-full p-2 bg-slate-50 border rounded-lg text-sm outline-none" placeholder="Vitz">
                 </div>
-                <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase block mb-1">Year (YOM)</label>
-                    <input type="number" id="year" class="w-full p-3 bg-slate-50 border rounded-lg focus:ring-2 focus:ring-cyan-500 outline-none" placeholder="2018">
+                <div class="col-span-2">
+                    <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Year (YOM)</label>
+                    <input type="number" id="year" class="w-full p-2 bg-slate-50 border rounded-lg text-sm outline-none" placeholder="2018">
                 </div>
-                <button onclick="runValuation()" id="submitBtn" class="w-full bg-slic text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest text-sm hover:opacity-90 active:scale-95 transition-all">Generate Assessment</button>
+                <div class="col-span-1">
+                    <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Chassis No (Opt)</label>
+                    <input type="text" id="chassis" class="w-full p-2 bg-slate-50 border rounded-lg text-sm outline-none" placeholder="KSP130-...">
+                </div>
+                <div class="col-span-1">
+                    <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Engine No (Opt)</label>
+                    <input type="text" id="engine" class="w-full p-2 bg-slate-50 border rounded-lg text-sm outline-none" placeholder="1KR-...">
+                </div>
             </div>
+            <button onclick="runValuation()" id="submitBtn" class="w-full bg-[#00ADBB] text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest text-xs active:scale-95 transition-all">Generate SLIC Report</button>
+        </div>
+
+        <div id="debugView" class="hidden mb-6">
+            <p class="text-[8px] font-bold text-slate-400 uppercase mb-1">System Console</p>
+            <div id="debugLog" class="debug-panel">Waiting for process...</div>
         </div>
 
         <div id="loading" class="hidden text-center py-10">
-            <div class="loader mb-3"></div>
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Applying Jan 2026 Market Adjustments...</p>
+            <div class="loader mb-2"></div>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Handshaking with Gemini API...</p>
         </div>
 
-        <div id="resultArea" class="hidden animate-in fade-in slide-in-from-bottom-4">
-            <div id="reportBox" class="slic-card p-6 mb-4 bg-white"></div>
-            <div class="grid grid-cols-2 gap-3">
+        <div id="resultArea" class="hidden">
+            <div id="reportBox" class="slic-card p-6 mb-4"></div>
+            <div class="grid grid-cols-2 gap-2">
                 <button onclick="downloadPDF()" class="bg-slate-900 text-white font-black py-4 rounded-xl uppercase text-[10px] tracking-widest shadow-lg">Download PDF</button>
-                <button onclick="location.reload()" class="bg-white border-2 border-slate-200 text-slate-400 font-black py-4 rounded-xl uppercase text-[10px] tracking-widest">New Query</button>
+                <button onclick="location.reload()" class="bg-white border text-slate-400 font-black py-4 rounded-xl uppercase text-[10px] tracking-widest">New Query</button>
             </div>
         </div>
     </div>
 
     <script>
         const API_KEY = "AIzaSyBDziGfusL4KD-2gLjGPerxbY-ue3ln3VA";
+        let isDebug = false;
+
+        function log(msg) {
+            console.log(msg);
+            const logDiv = document.getElementById('debugLog');
+            logDiv.innerHTML += `<br>> ${msg}`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function toggleDebug() {
+            isDebug = !isDebug;
+            document.getElementById('debugView').classList.toggle('hidden');
+            log("Debug mode enabled.");
+        }
 
         async function runValuation() {
-            const b = document.getElementById('brand').value.trim();
-            const m = document.getElementById('model').value.trim();
-            const y = document.getElementById('year').value.trim();
-            if(!b || !m || !y) return alert("Fill details.");
+            const brand = document.getElementById('brand').value.trim();
+            const model = document.getElementById('model').value.trim();
+            const year = document.getElementById('year').value.trim();
+            const chassis = document.getElementById('chassis').value.trim() || "N/A";
+            const engine = document.getElementById('engine').value.trim() || "N/A";
 
-            document.getElementById('inputSection').classList.add('hidden');
+            if(!brand || !model || !year) return alert("Fill Brand, Model and Year.");
+
+            document.getElementById('formCard').classList.add('hidden');
             document.getElementById('loading').classList.remove('hidden');
+            log(`Initiating assessment for ${brand} ${model}...`);
 
-            // CLINICAL PROMPT: Avoids "Safe" keywords that trigger filters
-            const prompt = `Task: Technical vehicle data extraction for ${b} ${m} ${y} (Sri Lanka 2026).
-            Required Data Points: Fuel type, Engine CC/KW, Seating count (excl. driver), RMV Class.
-            Market Pricing: Excellent condition and Good condition value in LKR (Include the Jan 2026 500k-600k price drop for Hybrids).
-            Fittings: Is 4WD available? Is a factory-installed body kit standard (Yes ONLY if OEM trim)?
-            Format: Pure JSON.
+            const prompt = `Data Extraction Task: Provide technical specs and historical valuation for ${brand} ${model} ${year} in Sri Lanka. 
+            Format: JSON only. 
+            Required fields: fuel, cc (in CC/KW), seats (excl driver), rmv (class), prices (exc & good), fittings (4wd & bodykit as bool), extra (high-value fittings), trend (Jan 2026 market context). 
+            Logic: Hybrid values dropped 600k in Jan 2026. 
             Structure: {"fuel":"str","cc":"str","seats":num,"rmv":"str","prices":{"exc":num,"good":num},"fittings":{"4wd":bool,"bodykit":bool},"extra":"str","trend":"str"}`;
 
-            // FLASH-8B: Lighter safety guardrails than standard Flash
-            const targetUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent?key=${API_KEY}`;
-            const bridgeUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
-
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent?key=${API_KEY}`;
             const payload = {
                 contents: [{ parts: [{ text: prompt }] }],
                 safetySettings: [
@@ -95,72 +120,88 @@
             };
 
             try {
-                const response = await fetch(bridgeUrl, {
+                log("Attempting direct connection to Google...");
+                let response = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
 
-                const bridgeData = await response.json();
-                const result = JSON.parse(bridgeData.contents);
-
-                if (result.candidates && result.candidates[0].finishReason === "SAFETY") {
-                    throw new Error("Safety Guardrail triggered. Please simplify the model name.");
+                if (!response.ok) {
+                    log("Direct connection blocked by CORS. Switching to AllOrigins Proxy...");
+                    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+                    response = await fetch(proxyUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
                 }
 
-                const rawText = result.candidates[0].content.parts[0].text;
-                const data = JSON.parse(rawText.replace(/```json|```/g, "").trim());
-                
-                showReport(data, b, m, y);
+                const data = await response.json();
+                log("Data received. Parsing contents...");
+
+                let finalResult;
+                if (data.contents) { // If it came through the proxy
+                    const parsed = JSON.parse(data.contents);
+                    finalResult = parsed.candidates[0].content.parts[0].text;
+                } else { // If it came directly
+                    finalResult = data.candidates[0].content.parts[0].text;
+                }
+
+                const json = JSON.parse(finalResult.replace(/```json|```/g, "").trim());
+                log("Success. Rendering report.");
+                showReport(json, brand, model, year, chassis, engine);
+
             } catch (e) {
-                console.error(e);
-                alert("Error: " + e.message);
-                location.reload();
+                log(`ERROR: ${e.message}`);
+                alert("Assessment Failed. See Debug Console.");
             } finally {
                 document.getElementById('loading').classList.add('hidden');
             }
         }
 
-        function showReport(data, b, m, y) {
+        function showReport(data, b, m, y, ch, en) {
             const SI = (v) => (v * 0.85).toLocaleString();
             const report = document.getElementById('reportBox');
             
             report.innerHTML = `
-                <div class="border-b-4 border-cyan-500 pb-4 mb-6">
+                <div class="border-b-4 border-[#00ADBB] pb-4 mb-6">
                     <h2 class="text-xl font-black uppercase text-slate-800">${b} ${m}</h2>
-                    <p class="text-[9px] font-bold text-slate-400 mt-1 uppercase tracking-widest italic">JAN 2026 VALUATION REPORT | YOM: ${y}</p>
+                    <p class="text-[9px] font-bold text-slate-400 mt-1 uppercase tracking-widest italic">VALUATION: JAN 2026 | YOM: ${y}</p>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3 mb-6">
-                    <div class="bg-slate-50 p-3 rounded-lg"><span class="text-[8px] font-black text-slate-400 block uppercase">Fuel Type</span><span class="text-xs font-bold">${data.fuel}</span></div>
-                    <div class="bg-slate-50 p-3 rounded-lg"><span class="text-[8px] font-black text-slate-400 block uppercase">Engine (CC/KW)</span><span class="text-xs font-bold">${data.cc}</span></div>
-                    <div class="bg-cyan-50 p-3 rounded-lg border border-cyan-100"><span class="text-[8px] font-black text-cyan-600 block uppercase">Seats (Excl Drv)</span><span class="text-xs font-black text-cyan-600">${data.seats} Seats</span></div>
-                    <div class="bg-slate-50 p-3 rounded-lg"><span class="text-[8px] font-black text-slate-400 block uppercase">RMV Class</span><span class="text-xs font-bold">${data.rmv}</span></div>
+                <div class="grid grid-cols-2 gap-3 mb-6 text-[10px]">
+                    <div class="col-span-2 grid grid-cols-2 gap-2 bg-slate-100 p-2 rounded mb-2 font-mono text-[9px]">
+                        <div>CHASSIS: ${ch}</div>
+                        <div>ENGINE: ${en}</div>
+                    </div>
+                    <div class="bg-slate-50 p-2 rounded border"><span>Fuel:</span> <b>${data.fuel}</b></div>
+                    <div class="bg-slate-50 p-2 rounded border"><span>Capacity:</span> <b>${data.cc}</b></div>
+                    <div class="bg-cyan-50 p-2 rounded border border-cyan-100"><span class="text-[#00ADBB]">Seats (Excl Drv):</span> <b class="text-[#00ADBB]">${data.seats}</b></div>
+                    <div class="bg-slate-50 p-2 rounded border"><span>RMV Class:</span> <b>${data.rmv}</b></div>
                 </div>
 
-                <div class="mb-6 rounded-xl border border-slate-100 overflow-hidden">
+                <div class="mb-6 rounded-lg border overflow-hidden">
                     <table class="w-full text-[11px] text-left">
-                        <thead class="bg-slate-900 text-white text-[8px] uppercase font-black">
-                            <tr><th class="p-3">Condition</th><th class="p-3">Market Price</th><th class="p-3 text-red-400">85% SI</th></tr>
+                        <thead class="bg-slate-900 text-white text-[8px] uppercase">
+                            <tr><th class="p-2">Condition</th><th class="p-2">Market</th><th class="p-2 text-red-400">85% SI</th></tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100">
-                            <tr><td class="p-3 font-bold">Excellent</td><td class="p-3 text-slate-400">${data.prices.exc.toLocaleString()}</td><td class="p-3 font-black text-red-600">${SI(data.prices.exc)}</td></tr>
-                            <tr><td class="p-3 font-bold">Good</td><td class="p-3 text-slate-500">${data.prices.good.toLocaleString()}</td><td class="p-3 font-black text-slate-900">${SI(data.prices.good)}</td></tr>
+                        <tbody class="divide-y">
+                            <tr><td class="p-2 font-bold">Excellent</td><td class="p-2 text-slate-400">${data.prices.exc.toLocaleString()}</td><td class="p-2 font-black text-red-600">${SI(data.prices.exc)}</td></tr>
+                            <tr><td class="p-2 font-bold">Good</td><td class="p-2 text-slate-500">${data.prices.good.toLocaleString()}</td><td class="p-2 font-black text-slate-900">${SI(data.prices.good)}</td></tr>
                         </tbody>
                     </table>
                 </div>
 
-                <div class="space-y-3 mb-6 text-[10px] font-black uppercase">
-                    <div class="flex justify-between items-center"><span>4-Wheel Drive</span><span class="${data.fittings['4wd'] ? 'text-green-500':'text-red-500'}">${data.fittings['4wd'] ? '✔ AVAILABLE':'✘ NO'}</span></div>
-                    <div class="flex justify-between items-center"><span>Factory Body Kit</span><span class="${data.fittings.bodykit ? 'text-green-500':'text-red-500'}">${data.fittings.bodykit ? '✔ YES':'✘ NO'}</span></div>
+                <div class="space-y-2 mb-6 text-[10px] font-black uppercase">
+                    <div class="flex justify-between"><span>4-Wheel Drive</span><span class="${data.fittings['4wd'] ? 'text-green-500':'text-red-500'}">${data.fittings['4wd'] ? '✔':'✘'}</span></div>
+                    <div class="flex justify-between"><span>Body Kit (OEM)</span><span class="${data.fittings.bodykit ? 'text-green-500':'text-red-500'}">${data.fittings.bodykit ? '✔':'✘'}</span></div>
                 </div>
 
-                <div class="bg-slate-800 p-4 rounded-xl text-white mb-4">
-                    <p class="text-[8px] font-black uppercase tracking-widest text-cyan-400 mb-1">High-Value Fittings</p>
-                    <p class="text-[10px] italic opacity-80 leading-relaxed">${data.extra}</p>
+                <div class="bg-slate-800 p-4 rounded-xl text-white mb-2">
+                    <p class="text-[8px] font-black uppercase text-[#00ADBB] mb-1 tracking-widest">High-Value Fittings</p>
+                    <p class="text-[10px] italic opacity-80">${data.extra}</p>
                 </div>
-
-                <p class="text-[9px] text-slate-400 italic">Analysis: ${data.trend}</p>
             `;
             document.getElementById('resultArea').classList.remove('hidden');
         }
@@ -168,10 +209,8 @@
         function downloadPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            const text = document.getElementById('reportBox').innerText;
-            doc.setFontSize(10);
-            doc.text(text, 20, 20);
-            doc.save(`Assessment_${Date.now()}.pdf`);
+            doc.text(document.getElementById('reportBox').innerText, 20, 20);
+            doc.save(`SLIC_${Date.now()}.pdf`);
         }
     </script>
 </body>
