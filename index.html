@@ -7,7 +7,6 @@
     
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#00ADBB">
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -15,56 +14,54 @@
     
     <style>
         :root { --slic-blue: #00ADBB; --slic-red: #ef4444; --slic-green: #10b981; }
-        body { background: #f8fafc; font-family: 'Inter', system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
-        .slic-header { background: var(--slic-blue); border-bottom: 3px solid rgba(0,0,0,0.1); }
-        .card { background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-top: 5px solid var(--slic-blue); }
+        body { background: #f8fafc; font-family: 'Segoe UI', Tahoma, sans-serif; -webkit-tap-highlight-color: transparent; }
+        .slic-header { background: var(--slic-blue); border-bottom: 4px solid rgba(0,0,0,0.15); }
+        .card { background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 5px solid var(--slic-blue); }
         .tick { color: var(--slic-green); font-weight: 900; }
         .cross { color: var(--slic-red); font-weight: 900; }
-        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--slic-blue); border-radius: 50%; width: 22px; height: 22px; animation: spin 1s linear infinite; display: inline-block; }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--slic-blue); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; display: inline-block; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .input-group label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 4px; display: block; }
-        .input-group input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; }
-        .input-group input:focus { border-color: var(--slic-blue); outline: none; box-shadow: 0 0 0 3px rgba(0, 173, 187, 0.1); }
+        .input-group label { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px; display: block; }
+        .input-group input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline-color: var(--slic-blue); }
     </style>
 </head>
 <body class="pb-10">
 
     <header class="slic-header p-5 text-white flex justify-between items-center sticky top-0 z-50">
         <div class="flex items-center gap-3">
-            <img src="icon.png" class="w-8 h-8 rounded shadow-sm" onerror="this.src='https://via.placeholder.com/32/00ADBB/FFFFFF?text=SL'">
-            <h1 class="font-bold text-sm tracking-tight uppercase">SLIC AI Portal</h1>
+            <img src="icon.png" class="w-8 h-8 rounded-full shadow-sm" onerror="this.src='https://via.placeholder.com/32/00ADBB/FFFFFF?text=SL'">
+            <h1 class="font-bold text-sm tracking-widest">SLIC ASSESSMENT</h1>
         </div>
-        <div class="bg-black/20 px-3 py-1 rounded-full text-[9px] font-bold uppercase">Jan 2026 LIVE</div>
+        <div class="bg-black/20 px-3 py-1 rounded-full text-[10px] font-black uppercase">JAN 2026</div>
     </header>
 
     <main class="max-w-md mx-auto p-4 pt-6">
         <div class="card p-6 mb-6">
             <div class="grid grid-cols-2 gap-4">
-                <div class="input-group col-span-1"><label>Brand</label><input type="text" id="brand" placeholder="Toyota"></div>
-                <div class="input-group col-span-1"><label>Model</label><input type="text" id="model" placeholder="Axio WxB"></div>
+                <div class="input-group col-span-1"><label>Brand</label><input type="text" id="brand" placeholder="e.g. Toyota"></div>
+                <div class="input-group col-span-1"><label>Model</label><input type="text" id="model" placeholder="e.g. Axio WxB"></div>
                 <div class="input-group col-span-2"><label>Year of Manufacture</label><input type="number" id="year" placeholder="2018"></div>
             </div>
-            <button onclick="runResearch()" id="mainBtn" class="w-full mt-6 bg-[#00ADBB] text-white font-black py-4 rounded-xl shadow-lg active:scale-95 transition-transform uppercase text-sm">
-                Run Assessment
+            <button onclick="runResearch()" id="mainBtn" class="w-full mt-6 bg-[#00ADBB] text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition-transform uppercase text-sm tracking-widest">
+                Start Research
             </button>
         </div>
 
         <div id="loading" class="hidden text-center py-6">
             <div class="loader mb-2"></div>
-            <p id="loadingStatus" class="text-xs font-bold text-slate-400 uppercase tracking-widest">Researching Jan 2026 Prices...</p>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Accessing Market Intelligence...</p>
         </div>
 
         <div id="resultSection" class="hidden">
-            <div id="reportBox" class="card p-8 bg-white text-slate-800"></div>
-            <button onclick="downloadPDF()" class="w-full mt-4 bg-slate-900 text-white font-bold py-4 rounded-xl shadow-xl">DOWNLOAD PDF</button>
+            <div id="reportBox" class="card p-8 bg-white text-slate-800 border-none"></div>
+            <button onclick="downloadPDF()" class="w-full mt-4 bg-slate-900 text-white font-bold py-4 rounded-xl shadow-xl">DOWNLOAD PDF REPORT</button>
             <button onclick="window.location.reload()" class="w-full mt-2 text-slate-400 font-bold py-2 text-[10px] uppercase">New Assessment</button>
         </div>
     </main>
 
     <script>
-        // PWA Bridge
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js').catch(e => console.log("Offline mode disabled"));
+            navigator.serviceWorker.register('./sw.js').catch(() => {});
         }
 
         const API_KEY = "AIzaSyBDziGfusL4KD-2gLjGPerxbY-ue3ln3VA";
@@ -73,18 +70,18 @@
             const b = document.getElementById('brand').value;
             const m = document.getElementById('model').value;
             const y = document.getElementById('year').value;
-            if(!b || !m || !y) return alert("Please fill all details.");
+            if(!b || !m || !y) return alert("Fill Brand, Model and Year.");
 
             document.getElementById('mainBtn').classList.add('hidden');
             document.getElementById('loading').classList.remove('hidden');
 
-            // Prompt specifically tuned for SLIC rules and 2026 trends
-            const prompt = `Assess vehicle for Sri Lankan market (Jan 2026): ${b} ${m} ${y}. 
-            1. Seats: Count EXCLUDING driver. 
-            2. Engine: Use CC (or KW if EV).
-            3. Body Kit: 'Yes' ONLY if factory package (e.g. WxB, RS, Z). Else 'No'.
-            4. Trends: Note the Jan 2026 price drop of 500k-600k LKR for small hybrids.
-            Return ONLY JSON: { "fuel": "str", "cc": "str", "seats": num, "rmv": "str", "prices": {"exc": num, "good": num, "fair": num}, "fittings": {"4wd": bool, "bodykit": bool}, "extra": "str", "trend": "str" }`;
+            const prompt = `Research current market data for ${b} ${m} ${y} in Sri Lanka (Jan 2026).
+            Rules: 
+            1. Seating: Count EXCLUDING driver. 
+            2. Engine: Use CC or KW.
+            3. Body Kit: Mark 'Yes' only if factory-standard (e.g. WxB, RS).
+            4. Budget 2026: Include Rs. 500k-600k hybrid price drop.
+            Return ONLY JSON: { "fuel": "str", "cc": "str", "seats": num, "rmv": "str", "prices": {"exc": num, "good": num, "fair": num}, "fittings": {"4wd": bool, "bodykit": bool}, "extra": "str", "analysis": "str" }`;
 
             try {
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
@@ -93,18 +90,14 @@
                     body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
                 });
 
-                if (!response.ok) {
-                    const errorJson = await response.json();
-                    throw new Error(errorJson.error.message || "Connection Rejected");
-                }
+                if (!response.ok) throw new Error("Connection failed");
 
                 const result = await response.json();
                 const textResult = result.candidates[0].content.parts[0].text;
-                const cleanData = JSON.parse(textResult.replace(/```json|```/g, "").trim());
-                showReport(cleanData, b, m, y);
+                const data = JSON.parse(textResult.replace(/```json|```/g, "").trim());
+                showReport(data, b, m, y);
             } catch (e) {
-                console.error(e);
-                alert("Assessment Error: " + e.message + ". Please check your API Key restrictions in Google Cloud Console.");
+                alert("Error: Please check if Gemini API is enabled in your Google Cloud Console.");
                 document.getElementById('mainBtn').classList.remove('hidden');
             } finally {
                 document.getElementById('loading').classList.add('hidden');
@@ -116,13 +109,13 @@
             const SI = (v) => (v * 0.85).toLocaleString();
             report.innerHTML = `
                 <div class="border-b-4 border-[#00ADBB] pb-3 mb-6">
-                    <h2 class="text-xl font-black uppercase text-slate-900">${b} ${m}</h2>
-                    <p class="text-[9px] font-bold text-slate-400">YOM: ${y} | VALUATION: JAN 2026</p>
+                    <h2 class="text-xl font-black uppercase">${b} ${m}</h2>
+                    <p class="text-[9px] font-bold text-slate-400 uppercase">Assessment Date: JAN 2026 | YOM: ${y}</p>
                 </div>
-                <div class="grid grid-cols-2 gap-3 mb-6 text-xs font-bold bg-slate-50 p-3 rounded-lg">
+                <div class="grid grid-cols-2 gap-3 mb-6 text-xs font-bold bg-slate-50 p-3 rounded-lg border">
                     <div><span class="text-[8px] text-slate-400 block">FUEL TYPE</span> ${data.fuel}</div>
                     <div><span class="text-[8px] text-slate-400 block">CAPACITY</span> ${data.cc}</div>
-                    <div class="text-blue-600"><span class="text-[8px] text-slate-400 block uppercase">Seats (Excl Driver)</span> ${data.seats}</div>
+                    <div class="text-[#00ADBB]"><span class="text-[8px] text-slate-400 block">SEATS (EXCL DRIVER)</span> ${data.seats}</div>
                     <div><span class="text-[8px] text-slate-400 block uppercase">RMV Class</span> ${data.rmv}</div>
                 </div>
                 <h4 class="text-[#00ADBB] text-[10px] font-black uppercase mb-2">Market Valuation (LKR)</h4>
@@ -131,15 +124,15 @@
                     <tr><td class="p-2 border font-bold">Excellent</td><td class="p-2 border">${data.prices.exc.toLocaleString()}</td><td class="p-2 border font-black text-red-600">${SI(data.prices.exc)}</td></tr>
                     <tr><td class="p-2 border">Good</td><td class="p-2 border text-slate-500">${data.prices.good.toLocaleString()}</td><td class="p-2 border font-bold">${SI(data.prices.good)}</td></tr>
                 </table>
-                <h4 class="text-[#00ADBB] text-[10px] font-black uppercase mb-2">Fittings Assessment</h4>
+                <h4 class="text-[#00ADBB] text-[10px] font-black uppercase mb-2">Standard Fittings Assessment</h4>
                 <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px] mb-6">
                     <div class="flex justify-between border-b py-1"><span>4 Wheel Drive</span> <span class="${data.fittings['4wd'] ? 'tick':'cross'}">${data.fittings['4wd'] ? '✔':'✘'}</span></div>
                     <div class="flex justify-between border-b py-1"><span>Modified/Body Kit</span> <span class="${data.fittings.bodykit ? 'tick':'cross'}">${data.fittings.bodykit ? '✔':'✘'}</span></div>
                 </div>
-                <div class="bg-blue-50 p-3 rounded text-[10px] italic text-slate-600 mb-4 border-l-4 border-[#00ADBB]">
+                <div class="bg-[#e0f7f9] p-3 rounded text-[10px] italic text-slate-600 mb-4 border-l-4 border-[#00ADBB]">
                     <strong>Additional High-Value Fittings:</strong> ${data.extra}
                 </div>
-                <p class="text-[9px] text-slate-400 leading-tight"><strong>AI Trend Analysis:</strong> ${data.trend}</p>
+                <p class="text-[9px] text-slate-400 leading-tight"><strong>Jan 2026 Trend:</strong> ${data.analysis}</p>
             `;
             document.getElementById('resultSection').classList.remove('hidden');
             document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
@@ -149,7 +142,7 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             doc.text(document.getElementById('reportBox').innerText, 15, 20);
-            doc.save("SLIC_Valuation_Report.pdf");
+            doc.save("SLIC_Valuation.pdf");
         }
     </script>
 </body>
