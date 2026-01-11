@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SLIC - Vehicle Market Intel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        :root { --slic-blue: #00ADBB; --slic-dark: #1a1a1a; }
+        body { background: #f8fafc; font-family: 'Segoe UI', sans-serif; }
+        .slic-header { background: var(--slic-blue); color: white; border-bottom: 4px solid #008c96; }
+        .card { background: white; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+        .input-group label { font-size: 0.7rem; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 4px; display: block; }
+        .input-field { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; outline: none; transition: 0.2s; }
+        .input-field:focus { border-color: var(--slic-blue); }
+        .tick { color: #10b981; font-weight: bold; }
+        .cross { color: #ef4444; font-weight: bold; }
+    </style>
+</head>
+<body class="pb-10">
+
+    <header class="slic-header p-6 mb-6">
+        <div class="max-w-xl mx-auto flex items-center gap-3">
+            <div class="bg-white text-[#00ADBB] font-black px-3 py-1 rounded">SLIC</div>
+            <h1 class="text-xl font-bold tracking-tight">Market Intelligence Portal</h1>
+        </div>
+    </header>
+
+    <main class="max-w-xl mx-auto px-4">
+        <div class="card p-6 mb-6">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="input-group">
+                    <label>Brand</label>
+                    <input type="text" id="brand" class="input-field" placeholder="Toyota" list="brandList">
+                    <datalist id="brandList"><option value="Toyota"><option value="Suzuki"><option value="Honda"></datalist>
+                </div>
+                <div class="input-group">
+                    <label>Model</label>
+                    <input type="text" id="model" class="input-field" placeholder="Premio">
+                </div>
+                <div class="input-group col-span-2">
+                    <label>Year of Manufacture</label>
+                    <input type="number" id="year" class="input-field" placeholder="2018">
+                </div>
+                <div class="input-group">
+                    <label>Chassis No (Optional)</label>
+                    <input type="text" id="chassis" class="input-field">
+                </div>
+                <div class="input-group">
+                    <label>Engine No (Optional)</label>
+                    <input type="text" id="engine" class="input-field">
+                </div>
+            </div>
+            <button onclick="generateReport()" id="genBtn" class="w-full mt-6 bg-[#00ADBB] hover:bg-[#008c96] text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-cyan-500/20">
+                Generate Market Report
+            </button>
+        </div>
+
+        <div id="reportArea" class="hidden">
+            <div id="reportContent" class="card p-8 text-sm">
+                </div>
+            <button onclick="exportPDF()" class="w-full mt-4 bg-slate-800 text-white font-bold py-4 rounded-xl">
+                Download PDF Report
+            </button>
+        </div>
+    </main>
+
+    <script>
+        function generateReport() {
+            const brand = document.getElementById('brand').value;
+            const model = document.getElementById('model').value;
+            const year = document.getElementById('year').value;
+            const genBtn = document.getElementById('genBtn');
+            
+            if(!brand || !model || !year) return alert("Fill Brand, Model, and Year");
+
+            genBtn.innerText = "Searching Market Values...";
+            
+            // Logic for Sri Lanka Probability Research
+            setTimeout(() => {
+                const reportArea = document.getElementById('reportArea');
+                const content = document.getElementById('reportContent');
+                
+                // Valuation Logic (Mocking Jan 2026 Real-time check)
+                const baseVal = 15500000; // Example for Premio 2018
+                const SI = (val) => (val * 0.85).toLocaleString();
+
+                content.innerHTML = `
+                    <div class="border-b-2 border-[#00ADBB] pb-4 mb-6">
+                        <h2 class="text-xl font-black text-gray-800 uppercase">${brand} ${model} - ${year}</h2>
+                        <p class="text-gray-500 font-bold">Market Valuation Report (Jan 2026)</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div><p class="text-xs text-gray-400">Fuel Type</p><p class="font-bold">Petrol (HEV Probable)</p></div>
+                        <div><p class="text-xs text-gray-400">Engine Capacity</p><p class="font-bold">1496 CC</p></div>
+                        <div><p class="text-xs text-gray-400">Seating Capacity</p><p class="font-bold">4 (Excl. Driver)</p></div>
+                        <div><p class="text-xs text-gray-400">RMV Classification</p><p class="font-bold">Motor Car</p></div>
+                    </div>
+
+                    <h3 class="font-bold mb-2 text-[#00ADBB]">Valuation & Sum Insured</h3>
+                    <table class="w-full mb-6 border">
+                        <tr class="bg-slate-50 text-[10px] font-bold">
+                            <th class="p-2 border">Condition</th><th class="p-2 border">Market Value (LKR)</th><th class="p-2 border">Sum Insured (85%)</th>
+                        </tr>
+                        <tr><td class="p-2 border">Excellent</td><td class="p-2 border">16.5M</td><td class="p-2 border font-bold">${SI(16500000)}</td></tr>
+                        <tr><td class="p-2 border">Good</td><td class="p-2 border">15.8M</td><td class="p-2 border font-bold">${SI(15800000)}</td></tr>
+                        <tr><td class="p-2 border">Fair</td><td class="p-2 border">15.2M</td><td class="p-2 border font-bold">${SI(15200000)}</td></tr>
+                    </table>
+
+                    <h3 class="font-bold mb-2 text-[#00ADBB]">Standard Fittings Check</h3>
+                    <div class="grid grid-cols-2 gap-x-8 gap-y-1 text-xs">
+                        <div class="flex justify-between"><span>Power Steering</span><span class="tick">✔</span></div>
+                        <div class="flex justify-between"><span>Air Bags</span><span class="tick">✔</span></div>
+                        <div class="flex justify-between"><span>Power Shutter</span><span class="tick">✔</span></div>
+                        <div class="flex justify-between"><span>ABS/Brake</span><span class="tick">✔</span></div>
+                        <div class="flex justify-between"><span>Power Mirror</span><span class="tick">✔</span></div>
+                        <div class="flex justify-between"><span>Alloy Rims</span><span class="tick">✔</span></div>
+                        <div class="flex justify-between"><span>4WD</span><span class="cross">✘</span></div>
+                        <div class="flex justify-between"><span>Body Kit</span><span class="cross">✘</span></div>
+                    </div>
+                `;
+                
+                genBtn.innerText = "Generate Market Report";
+                reportArea.classList.remove('hidden');
+                reportArea.scrollIntoView({behavior: 'smooth'});
+            }, 1500);
+        }
+
+        function exportPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFontSize(18);
+            doc.setTextColor(0, 173, 187);
+            doc.text("SLIC VEHICLE ASSESSMENT REPORT", 15, 20);
+            
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text("Generated: Jan 2026", 15, 28);
+            
+            const source = document.getElementById('reportContent');
+            doc.html(source, {
+                callback: function (doc) { doc.save("SLIC_Report.pdf"); },
+                x: 15, y: 40, width: 170, windowWidth: 650
+            });
+        }
+    </script>
+</body>
+</html>
+
