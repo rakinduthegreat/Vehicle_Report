@@ -1,16 +1,22 @@
 {
-  "name": "SLIC Vehicle Hub",
-  "short_name": "VehicleHub",
+  "name": "SLIC Assessment Portal",
+  "short_name": "SLIC Hub",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#00ADBB",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/741/741407.png",
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
-
